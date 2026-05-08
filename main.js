@@ -125,6 +125,8 @@ ipcMain.handle('get-version', () => {
 });
 
 // Auto Updater IPC Handlers
+autoUpdater.autoDownload = false;
+
 ipcMain.handle('check-for-updates', () => {
   return new Promise((resolve) => {
     const onAvailable = (info) => { cleanup(); resolve({ available: true, info }); };
