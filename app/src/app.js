@@ -1911,10 +1911,10 @@ if (hwAccelToggle || runOnStartupToggle) {
           const currentSettings = await window.electronAPI.getSettings().catch(() => ({}));
           await window.electronAPI.saveSettings({ ...currentSettings, runOnStartup: isEnabled });
           
-          showNotification('Startup Setting Updated', isEnabled ? 'Sydex will now launch automatically on startup.' : 'Sydex will no longer launch on startup.', 'success');
+          notify(isEnabled ? 'Sydex will now launch automatically on startup.' : 'Sydex will no longer launch on startup.', 'success');
         } catch (err) {
           console.error('Failed to save run on startup settings:', err);
-          showNotification('Error', 'Failed to update startup settings.', 'error');
+          notify('Failed to update startup settings.', 'error');
         }
       });
     }
@@ -3791,25 +3791,25 @@ if (updateBtn) {
     }
     
     if (window.electronAPI && window.electronAPI.checkForUpdates) {
-      showNotification('Checking for updates...', 'Connecting to update server.', 'info');
+      notify('Checking for updates...', 'info');
       try {
         const result = await window.electronAPI.checkForUpdates();
         if (result.available) {
-          showNotification('Update Found', 'Downloading the new version...', 'success');
+          notify('Update Found: Downloading...', 'success');
           window.electronAPI.downloadUpdate();
         } else if (result.error && result.error !== 'App is not packaged') {
-          showNotification('Update Check Failed', result.error, 'error');
+          notify(`Update Check Failed: ${result.error}`, 'error');
         } else if (result.error === 'App is not packaged') {
-           showNotification('Development Mode', 'Auto-update is disabled in development.', 'info');
+           notify('Auto-update is disabled in development.', 'info');
         } else {
-          showNotification('Up to Date', 'You are running the latest version.', 'info');
+          notify('You are running the latest version.', 'info');
         }
       } catch (err) {
         console.error('Update check error:', err);
-        showNotification('Error', 'Could not check for updates.', 'error');
+        notify('Could not check for updates.', 'error');
       }
     } else {
-      showNotification('Error', 'Updater module not available.', 'error');
+      notify('Updater module not available.', 'error');
     }
   });
 }
