@@ -3724,13 +3724,26 @@ if (aboutBtn && aboutOverlay && aboutCloseBtn) {
         }
       });
       
+      let appVersion = data.app_version || 'Unknown';
+      if (window.electronAPI && window.electronAPI.getVersion) {
+        try {
+          appVersion = await window.electronAPI.getVersion();
+        } catch (e) {
+          console.warn('Failed to fetch version from main process:', e);
+        }
+      }
+
       document.getElementById('about-app-name').textContent = data.app_version_name || 'Unknown App';
-      document.getElementById('about-app-version').textContent = `Version ${data.app_version || 'Unknown'}`;
+      document.getElementById('about-app-version').textContent = `Version ${appVersion}`;
       document.getElementById('about-app-desc').textContent = data.app_description || '';
     } catch (err) {
       console.error('Error fetching about info:', err);
+      let appVersion = '1.0.0';
+      if (window.electronAPI && window.electronAPI.getVersion) {
+        appVersion = await window.electronAPI.getVersion().catch(() => '1.0.0');
+      }
       document.getElementById('about-app-name').textContent = 'CanbanApp';
-      document.getElementById('about-app-version').textContent = 'Version 1.0.0';
+      document.getElementById('about-app-version').textContent = `Version ${appVersion}`;
       document.getElementById('about-app-desc').textContent = 'Task Management Tool';
     }
   };
@@ -3749,6 +3762,38 @@ if (aboutBtn && aboutOverlay && aboutCloseBtn) {
   aboutOverlay.addEventListener('click', (e) => {
     if (e.target === aboutOverlay) {
       aboutOverlay.classList.add('hidden');
+    }
+  });
+}
+
+// --- CHECK FOR UPDATES BUTTON ---
+const updateBtn = document.getElementById('update-btn');
+if (updateBtn) {
+  updateBtn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (typeof profilePopup !== 'undefined' && profilePopup) {
+      profilePopup.classList.add('hidden');
+    }
+    
+    if (window.electronAPI && window.electronAPI.checkForUpdates) {
+      showNotification('Checking for updates...', 'Connecting to update server.', 'info');
+      try {
+        const result = await window.electronAPI.checkForUpdates();
+        if (result.available) {
+          showNotification('Update Available', 'Downloading new version in background...', 'success');
+        } else if (result.error && result.error !== 'App is not packaged') {
+          showNotification('Update Check Failed', result.error, 'error');
+        } else if (result.error === 'App is not packaged') {
+           showNotification('Development Mode', 'Auto-update is disabled in development.', 'info');
+        } else {
+          showNotification('Up to Date', 'You are running the latest version.', 'info');
+        }
+      } catch (err) {
+        console.error('Update check error:', err);
+        showNotification('Error', 'Could not check for updates.', 'error');
+      }
+    } else {
+      showNotification('Error', 'Updater module not available.', 'error');
     }
   });
 }

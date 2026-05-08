@@ -120,6 +120,10 @@ ipcMain.on('relaunch-app', () => {
   app.exit(0);
 });
 
+ipcMain.handle('get-version', () => {
+  return app.getVersion();
+});
+
 // Auto Updater IPC Handlers
 ipcMain.handle('check-for-updates', () => {
   return new Promise((resolve) => {
