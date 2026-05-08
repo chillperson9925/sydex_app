@@ -94,14 +94,19 @@ ipcMain.handle('save-data', async (event, data) => {
 ipcMain.handle('get-settings', async () => {
   try {
     const data = await fs.readFile(settingsFilePath, 'utf8');
-    return JSON.parse(data);
+    const settings = JSON.parse(data);
+    settings.runOnStartup = app.getLoginItemSettings().openAtLogin;
+    return settings;
   } catch (error) {
-    return { hardwareAcceleration: true }; // Default
+    return { hardwareAcceleration: true, runOnStartup: app.getLoginItemSettings().openAtLogin }; // Default
   }
 });
 
 ipcMain.handle('save-settings', async (event, data) => {
   try {
+    if (data.runOnStartup !== undefined) {
+      app.setLoginItemSettings({ openAtLogin: data.runOnStartup });
+    }
     await fs.writeFile(settingsFilePath, JSON.stringify(data, null, 2), 'utf8');
     return { success: true };
   } catch (error) {

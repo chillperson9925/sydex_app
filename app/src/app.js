@@ -1874,12 +1874,15 @@ if (startupDropdown && startupSelected && startupOptionsEl) {
 
 // Hardware Acceleration Toggle Logic
 const hwAccelToggle = document.getElementById('settings-hardware-accel');
-if (hwAccelToggle) {
+const runOnStartupToggle = document.getElementById('settings-run-on-startup');
+
+if (hwAccelToggle || runOnStartupToggle) {
   if (window.electronAPI && window.electronAPI.getSettings) {
     // Load initial state safely
     window.electronAPI.getSettings()
       .then(settings => {
-        hwAccelToggle.checked = settings.hardwareAcceleration !== false; // true by default
+        if (hwAccelToggle) hwAccelToggle.checked = settings.hardwareAcceleration !== false; // true by default
+        if (runOnStartupToggle) runOnStartupToggle.checked = settings.runOnStartup === true; // false by default
       })
       .catch(err => console.warn('Failed to load settings:', err));
 
@@ -1899,6 +1902,22 @@ if (hwAccelToggle) {
         console.error('Failed to save hardware acceleration settings:', err);
       }
     });
+
+    if (runOnStartupToggle) {
+      runOnStartupToggle.addEventListener('change', async (e) => {
+        const isEnabled = e.target.checked;
+        try {
+          // Keep hardwareAcceleration state alongside runOnStartup
+          const currentSettings = await window.electronAPI.getSettings().catch(() => ({}));
+          await window.electronAPI.saveSettings({ ...currentSettings, runOnStartup: isEnabled });
+          
+          showNotification('Startup Setting Updated', isEnabled ? 'Sydex will now launch automatically on startup.' : 'Sydex will no longer launch on startup.', 'success');
+        } catch (err) {
+          console.error('Failed to save run on startup settings:', err);
+          showNotification('Error', 'Failed to update startup settings.', 'error');
+        }
+      });
+    }
   } else {
     // Fallback if preload script hasn't updated yet (requires full app restart first)
     hwAccelToggle.addEventListener('change', (e) => {
