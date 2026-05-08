@@ -727,6 +727,11 @@ function renderActiveBoard(animate = false, oldPositions = null) {
     if (settingsBtn) settingsBtn.classList.remove('settings-active');
   }
 
+  const existingStats = boardView.querySelector('.board-stats-view');
+  if (existingStats) existingStats.remove();
+  statsOpen = false;
+  if (statsBtn) statsBtn.classList.remove('settings-active');
+
   if (!board) {
     // Show Home View when no board is selected
     if (homeView) homeView.classList.remove('hidden');
@@ -1705,6 +1710,8 @@ if (statsBtn) {
       statsOpen = true;
       statsBtn.classList.add('settings-active');
       columnsContainer.innerHTML = '';
+      
+      if (addColumnBtn) addColumnBtn.classList.add('hidden');
 
       const emptyState = boardView.querySelector('.board-empty-state');
       if (emptyState) emptyState.remove();
