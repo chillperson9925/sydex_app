@@ -17,7 +17,8 @@
       {
         "provider": "github",
         "owner": "chillperson9925",
-        "repo": "sydex_app"
+        "repo": "sydex_app",
+        "releaseType": "release"
       }
     ],
     "win": {
