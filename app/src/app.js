@@ -3768,6 +3768,21 @@ if (aboutBtn && aboutOverlay && aboutCloseBtn) {
 
 // --- CHECK FOR UPDATES BUTTON ---
 const updateBtn = document.getElementById('update-btn');
+
+// Global listener for update downloaded
+if (window.electronAPI && window.electronAPI.onUpdateDownloaded) {
+  window.electronAPI.onUpdateDownloaded(() => {
+    openConfirmModal(
+      'Update Ready',
+      'A new version of Sydex has been downloaded. Relaunch the app to apply the update?',
+      () => { window.electronAPI.installUpdate(); },
+      null, null,
+      'Relaunch Now',
+      'Later'
+    );
+  });
+}
+
 if (updateBtn) {
   updateBtn.addEventListener('click', async (e) => {
     e.stopPropagation();
@@ -3780,7 +3795,8 @@ if (updateBtn) {
       try {
         const result = await window.electronAPI.checkForUpdates();
         if (result.available) {
-          showNotification('Update Available', 'Downloading new version in background...', 'success');
+          showNotification('Update Found', 'Downloading the new version...', 'success');
+          window.electronAPI.downloadUpdate();
         } else if (result.error && result.error !== 'App is not packaged') {
           showNotification('Update Check Failed', result.error, 'error');
         } else if (result.error === 'App is not packaged') {
