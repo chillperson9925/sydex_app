@@ -1741,9 +1741,6 @@ if (settingsBtn) {
       if (homeView) homeView.classList.add('hidden');
       if (homeNavBtn) homeNavBtn.classList.remove('active');
       
-      store.setActiveBoard(null);
-      renderBoards();
-      
       settingsView.classList.remove('hidden');
       settingsBtn.classList.add('settings-active');
       
