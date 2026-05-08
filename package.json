@@ -1,0 +1,37 @@
+{
+  "name": "sydex",
+  "version": "1.0.0",
+  "description": "Sydex",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build-win": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.sydex.app",
+    "productName": "Sydex",
+    "directories": {
+      "output": "dist"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "chillperson9925",
+        "repo": "sydex_app"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "app/src/assets/icon.png"
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^42.0.0",
+    "electron-builder": "^26.8.1"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
+  }
+}

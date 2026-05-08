@@ -1,0 +1,3 @@
+@echo off
+echo Starting Sydex Kanban...
+npm start
