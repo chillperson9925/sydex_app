@@ -794,9 +794,6 @@ function renderActiveBoard(animate = false, oldPositions = null) {
 
   const existingEmpty = boardView.querySelector('.board-empty-state');
   if (existingEmpty) existingEmpty.remove();
-  const existingStats = boardView.querySelector('.board-stats-view');
-  if (existingStats) existingStats.remove();
-  if (statsBtn) statsBtn.classList.remove('settings-active');
 
   if (board.columns.length === 0) {
     const emptyState = document.createElement('div');
