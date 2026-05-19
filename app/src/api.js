@@ -1,5 +1,5 @@
-const BASE_URL = 'sydexbackend-production.up.railway.app';
-const WS_URL = 'sydexbackend-production.up.railway.app';
+const BASE_URL = 'https://sydexbackend-production.up.railway.app/api';
+const WS_URL = 'https://sydexbackend-production.up.railway.app';
 
 class ApiService {
   constructor() {
