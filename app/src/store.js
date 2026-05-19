@@ -15,7 +15,9 @@ class Store {
         }
       } catch (err) {
         console.error("Failed to load cloud data", err);
-        // Fallback to empty state on error
+        if (typeof notify === 'function') {
+          notify('Failed to load your boards. Please check your connection.', 'error', 5000);
+        }
         this.data = { boards: [], folders: [], activeBoardId: null };
       }
     } else {
@@ -35,6 +37,9 @@ class Store {
         await window.api.saveBoardData(this.data);
       } catch (err) {
         console.error("Failed to save cloud data", err);
+        if (typeof notify === 'function') {
+          notify('Failed to save changes. Your data may not be synced.', 'error', 5000);
+        }
       }
     }
   }

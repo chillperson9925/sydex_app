@@ -1,6 +1,9 @@
 node_modules/
 dist/
-backend/
+backend/node_modules/
+backend/.env
 *.env
 package-lock.json
 .DS_Store
+rules.md
+start.bat
