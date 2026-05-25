@@ -752,8 +752,6 @@ function renderActiveBoard(animate = false, oldPositions = null) {
     if (statsBtn) statsBtn.classList.add('hidden');
     const extrasBtn = document.getElementById('extras-btn');
     if (extrasBtn) extrasBtn.classList.add('hidden');
-    const easterEggBtn = document.getElementById('easter-egg-btn');
-    if (easterEggBtn) easterEggBtn.classList.add('hidden');
     if (collaboratorsBtn) collaboratorsBtn.classList.add('hidden');
     return;
   }
@@ -784,18 +782,6 @@ function renderActiveBoard(animate = false, oldPositions = null) {
   if (statsBtn) statsBtn.classList.remove('hidden');
   const extrasBtn = document.getElementById('extras-btn');
   if (extrasBtn) extrasBtn.classList.remove('hidden');
-  
-  const easterEggBtn = document.getElementById('easter-egg-btn');
-  if (easterEggBtn) {
-    if (typeof window.isEasterEggLucky === 'undefined') {
-      window.isEasterEggLucky = Math.random() < 0.10;
-    }
-    if (window.i18n && window.i18n.getLanguage() === 'tr' && window.isEasterEggLucky) {
-      easterEggBtn.classList.remove('hidden');
-    } else {
-      easterEggBtn.classList.add('hidden');
-    }
-  }
   
   if (collaboratorsBtn) {
     if (board.hasCollaborators && !board.isShared) {
