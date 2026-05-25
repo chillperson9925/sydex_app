@@ -39,7 +39,7 @@
       <div class="sidebar-header">
         <h2 style="color: var(--primary-color); font-size: 16px;">My Boards</h2>
         <div style="display: flex; gap: 5px;">
-          <button id="add-folder-btn" class="icon-btn tooltip-btn" data-tooltip="Add Folder">
+          <button id="add-folder-btn" class="icon-btn tooltip-btn" data-i18n-tooltip="tooltip.addFolder" data-tooltip="Add Folder">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
@@ -47,14 +47,14 @@
               <line x1="9" y1="14" x2="15" y2="14"></line>
             </svg>
           </button>
-          <button id="add-board-btn" class="icon-btn tooltip-btn" data-tooltip="Add Board">
+          <button id="add-board-btn" class="icon-btn tooltip-btn" data-i18n-tooltip="tooltip.addBoard" data-tooltip="Add Board">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
           </button>
-          <button id="join-board-btn" class="icon-btn tooltip-btn" data-tooltip="Join Board">
+          <button id="join-board-btn" class="icon-btn tooltip-btn" data-i18n-tooltip="tooltip.joinBoard" data-tooltip="Join Board">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
@@ -81,7 +81,7 @@
       <div class="sidebar-profile">
         <div class="profile-info">
           <input type="file" id="avatar-upload-input" accept="image/*" style="display: none;">
-          <div id="avatar-wrapper" class="avatar-wrapper tooltip-btn tooltip-top" data-tooltip="Change Avatar"
+          <div id="avatar-wrapper" class="avatar-wrapper tooltip-btn tooltip-top" data-i18n-tooltip="tooltip.changeAvatar" data-tooltip="Change Avatar"
             style="position: relative; border-radius: 8px; overflow: hidden; cursor: pointer;">
             <div class="profile-avatar" id="sidebar-avatar">U</div>
             <div class="avatar-overlay"
@@ -96,7 +96,7 @@
           <span class="profile-name" id="sidebar-username">User</span>
         </div>
         <div style="display: flex; gap: 2px; align-items: center;">
-          <button id="settings-btn" class="icon-btn tooltip-btn tooltip-top" data-tooltip="Settings">
+          <button id="settings-btn" class="icon-btn tooltip-btn tooltip-top" data-i18n-tooltip="tooltip.settings" data-tooltip="Settings">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
@@ -106,7 +106,7 @@
             </svg>
           </button>
           <div class="profile-menu-wrapper">
-            <button id="profile-menu-btn" class="icon-btn tooltip-btn tooltip-top" data-tooltip="More">
+            <button id="profile-menu-btn" class="icon-btn tooltip-btn tooltip-top" data-i18n-tooltip="tooltip.more" data-tooltip="More">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="1"></circle>
@@ -150,7 +150,7 @@
         <div class="board-title-wrapper">
           <div id="board-title-display" style="display: flex; align-items: center; gap: 10px;">
             <h1 id="active-board-title">Select a Board</h1>
-            <button id="edit-board-title-btn" class="icon-btn edit-btn tooltip-btn hidden" data-tooltip="Edit Name">
+            <button id="edit-board-title-btn" class="icon-btn edit-btn tooltip-btn hidden" data-i18n-tooltip="tooltip.editName" data-tooltip="Edit Name">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -185,12 +185,12 @@
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input type="text" id="board-search-input" placeholder="Search tasks..."
+            <input type="text" id="board-search-input" data-i18n-placeholder="search.placeholder" placeholder="Search tasks..."
               style="background: rgba(255,255,255,0.05); border: 1px solid transparent; color: var(--text-main); padding: 6px 8px 6px 30px; border-radius: 6px; font-size: 13px; width: 140px; outline: none; transition: all 0.2s; font-family: inherit;"
               onfocus="this.style.borderColor='var(--primary-color)'; this.style.background='rgba(255,255,255,0.1)'; this.style.width='200px';"
               onblur="this.style.borderColor='transparent'; this.style.background='rgba(255,255,255,0.05)'; this.style.width='140px';">
           </div>
-          <button id="add-column-btn" class="icon-btn tooltip-btn hidden" data-tooltip="Add Category"
+          <button id="add-column-btn" class="icon-btn tooltip-btn hidden" data-i18n-tooltip="tooltip.addCategory" data-tooltip="Add Category"
             style="color: var(--text-main);">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
@@ -198,7 +198,7 @@
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
           </button>
-          <button id="collaborators-btn" class="icon-btn tooltip-btn hidden" data-tooltip="Manage Collaborators"
+          <button id="collaborators-btn" class="icon-btn tooltip-btn hidden" data-i18n-tooltip="tooltip.manageCollaborators" data-tooltip="Manage Collaborators"
             style="color: var(--text-main);">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
@@ -208,7 +208,7 @@
               <line x1="23" y1="11" x2="17" y2="11"></line>
             </svg>
           </button>
-          <button id="stats-btn" class="icon-btn tooltip-btn hidden" data-tooltip="Statistics"
+          <button id="stats-btn" class="icon-btn tooltip-btn hidden" data-i18n-tooltip="tooltip.statistics" data-tooltip="Statistics"
             style="color: var(--text-main);">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
@@ -219,7 +219,7 @@
           </button>
 
           <div class="extras-menu-wrapper" style="position: relative;">
-            <button id="extras-btn" class="icon-btn tooltip-btn hidden" data-tooltip="Extras"
+            <button id="extras-btn" class="icon-btn tooltip-btn hidden" data-i18n-tooltip="tooltip.extras" data-tooltip="Extras"
               style="color: var(--text-main);">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -379,13 +379,13 @@
 
           <!-- Account Security Section -->
           <div class="settings-section">
-            <h3 class="settings-section-title">Account Security</h3>
-            <p class="settings-section-desc">Update your password to keep your account secure.</p>
+            <h3 class="settings-section-title" data-i18n="settings.accountSecurity">Account Security</h3>
+            <p class="settings-section-desc" data-i18n="settings.accountSecurityDesc">Update your password to keep your account secure.</p>
 
             <div class="settings-form">
               <div class="input-group">
                 <input type="password" id="settings-current-password" class="auth-input floating-input" placeholder=" ">
-                <label class="floating-label">Current Password</label>
+                <label class="floating-label" data-i18n="settings.currentPassword">Current Password</label>
                 <button type="button" class="password-toggle-btn" tabindex="-1" title="Toggle password visibility">
                   <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -404,7 +404,7 @@
 
               <div class="input-group">
                 <input type="password" id="settings-new-password" class="auth-input floating-input" placeholder=" ">
-                <label class="floating-label">New Password</label>
+                <label class="floating-label" data-i18n="settings.newPassword">New Password</label>
                 <button type="button" class="password-toggle-btn" tabindex="-1" title="Toggle password visibility">
                   <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -424,19 +424,19 @@
               </div>
 
               <button id="btn-change-password" class="secondary-btn"
-                style="width: 100%; margin-top: 15px; border-radius: 8px;">Update Password</button>
+                style="width: 100%; margin-top: 15px; border-radius: 8px;" data-i18n="settings.updatePassword">Update Password</button>
             </div>
           </div>
 
           <!-- Preferences Section -->
           <div class="settings-section">
-            <h3 class="settings-section-title">Preferences</h3>
-            <p class="settings-section-desc">Customize your application experience.</p>
+            <h3 class="settings-section-title" data-i18n="settings.preferences">Preferences</h3>
+            <p class="settings-section-desc" data-i18n="settings.preferencesDesc">Customize your application experience.</p>
 
             <div class="settings-item">
               <div class="settings-item-info">
-                <span class="settings-item-title">Theme</span>
-                <span class="settings-item-desc">Choose your preferred appearance</span>
+                <span class="settings-item-title" data-i18n="settings.theme">Theme</span>
+                <span class="settings-item-desc" data-i18n="settings.themeDesc">Choose your preferred appearance</span>
               </div>
               <div class="custom-dropdown" id="theme-dropdown">
                 <div class="dropdown-selected" id="theme-selected">
@@ -456,8 +456,27 @@
 
             <div class="settings-item">
               <div class="settings-item-info">
-                <span class="settings-item-title">Hardware Acceleration</span>
-                <span class="settings-item-desc">Use GPU for rendering instead of CPU.</span>
+                <span class="settings-item-title" data-i18n="settings.language">Language</span>
+                <span class="settings-item-desc" data-i18n="settings.languageDesc">Choose your preferred language</span>
+              </div>
+              <div class="custom-dropdown" id="lang-dropdown">
+                <div class="dropdown-selected" id="lang-selected">
+                  <span>English</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+                <div class="dropdown-options" id="lang-options">
+                  <div class="dropdown-option active" data-value="en">English</div>
+                  <div class="dropdown-option" data-value="tr">Türkçe</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-item">
+              <div class="settings-item-info">
+                <span class="settings-item-title" data-i18n="settings.hardwareAccel">Hardware Acceleration</span>
+                <span class="settings-item-desc" data-i18n="settings.hardwareAccelDesc">Use GPU for rendering instead of CPU.</span>
               </div>
               <label class="settings-toggle">
                 <input type="checkbox" id="settings-hardware-accel" checked>
@@ -467,8 +486,8 @@
 
             <div class="settings-item">
               <div class="settings-item-info">
-                <span class="settings-item-title">Run on Startup</span>
-                <span class="settings-item-desc">Launch Sydex automatically when your computer starts.</span>
+                <span class="settings-item-title" data-i18n="settings.runOnStartup">Run on Startup</span>
+                <span class="settings-item-desc" data-i18n="settings.runOnStartupDesc">Launch Sydex automatically when your computer starts.</span>
               </div>
               <label class="settings-toggle">
                 <input type="checkbox" id="settings-run-on-startup">
@@ -478,12 +497,12 @@
 
             <div class="settings-item">
               <div class="settings-item-info">
-                <span class="settings-item-title">Startup Location</span>
-                <span class="settings-item-desc">Choose where the app opens on launch</span>
+                <span class="settings-item-title" data-i18n="settings.startupLocation">Startup Location</span>
+                <span class="settings-item-desc" data-i18n="settings.startupLocationDesc">Choose where the app opens on launch</span>
               </div>
               <div class="custom-dropdown" id="startup-dropdown">
                 <div class="dropdown-selected" id="startup-selected">
-                  <span>Home</span>
+                  <span data-i18n="nav.home">Home</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 12 15 18 9"></polyline>
@@ -796,7 +815,7 @@
         <div class="auth-tabs-container">
           <div class="auth-tabs-slider" id="auth-tabs-slider"></div>
           <button id="tab-login" class="auth-tab active">Log In</button>
-          <button id="tab-register" class="auth-tab">Sign Up</button>
+          <button id="tab-register" class="auth-tab" data-i18n="auth.createAccount">Sign Up</button>
         </div>
 
         <div class="auth-forms-slider">
@@ -806,12 +825,12 @@
 
             <div class="input-group">
               <input type="email" id="login-email" class="auth-input floating-input" placeholder=" " autocomplete="off">
-              <label class="floating-label">Email Address</label>
+              <label class="floating-label" data-i18n="auth.email">Email Address</label>
             </div>
 
             <div class="input-group">
               <input type="password" id="login-password" class="auth-input floating-input" placeholder=" ">
-              <label class="floating-label">Password</label>
+              <label class="floating-label" data-i18n="auth.password">Password</label>
               <button type="button" class="password-toggle-btn" tabindex="-1" title="Toggle password visibility">
                 <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                   stroke-linecap="round" stroke-linejoin="round">
@@ -828,7 +847,7 @@
               </button>
             </div>
 
-            <button id="btn-login" class="auth-btn premium-btn">Sign In</button>
+            <button id="btn-login" class="auth-btn premium-btn" data-i18n="auth.signIn">Sign In</button>
           </div>
 
           <div id="form-register" class="auth-form auth-hidden">
@@ -838,7 +857,7 @@
             <div class="input-group">
               <input type="text" id="register-username" class="auth-input floating-input" placeholder=" "
                 autocomplete="off">
-              <label class="floating-label">Username</label>
+              <label class="floating-label" data-i18n="auth.username">Username</label>
               <span id="username-live-error" class="live-error-msg hidden">Min 8 chars, letters and numbers only.</span>
             </div>
 
@@ -886,10 +905,42 @@
         <div class="setup-step-dot active" data-step="1"></div>
         <div class="setup-step-line"></div>
         <div class="setup-step-dot" data-step="2"></div>
+        <div class="setup-step-line"></div>
+        <div class="setup-step-dot" data-step="3"></div>
       </div>
 
-      <!-- Step 1: Theme -->
+      <!-- Step 1: Language -->
       <div id="setup-step-1" class="setup-step">
+        <div class="setup-header">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <h2 data-i18n="setup.languageTitle">Choose Language</h2>
+          <p data-i18n="setup.languageDesc">Select your preferred language before we continue.</p>
+        </div>
+        <div class="setup-themes" style="justify-content: center; gap: 20px;">
+          <div class="setup-lang-card selected" data-lang="en" style="padding: 20px; align-items: center; width: 140px; display: flex; flex-direction: column; background: var(--card-bg); border: 2px solid var(--primary-color); border-radius: var(--radius-md); cursor: pointer; position: relative; transition: all 0.2s;">
+            <div style="font-size: 40px; margin-bottom: 10px;">🇺🇸</div>
+            <span style="font-weight: 600;">English</span>
+            <div class="setup-lang-check" style="position: absolute; top: 10px; right: 10px; color: var(--primary-color);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+          </div>
+          <div class="setup-lang-card" data-lang="tr" style="padding: 20px; align-items: center; width: 140px; display: flex; flex-direction: column; background: var(--card-bg); border: 2px solid transparent; border-radius: var(--radius-md); cursor: pointer; position: relative; opacity: 0.7; transition: all 0.2s;">
+            <div style="font-size: 40px; margin-bottom: 10px;">🇹🇷</div>
+            <span style="font-weight: 600;">Türkçe</span>
+            <div class="setup-lang-check hidden" style="position: absolute; top: 10px; right: 10px; color: var(--primary-color);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+          </div>
+        </div>
+        <button id="setup-next-btn-lang" class="auth-btn premium-btn" style="max-width: 320px; margin: 0 auto;" data-i18n="setup.nextBtn">Next</button>
+      </div>
+
+      <!-- Step 2: Theme -->
+      <div id="setup-step-2" class="setup-step hidden">
         <div class="setup-header">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
@@ -964,15 +1015,15 @@
         <button id="setup-next-btn" class="auth-btn premium-btn" style="max-width: 320px; margin: 0 auto;">Next</button>
       </div>
 
-      <!-- Step 2: Permissions -->
-      <div id="setup-step-2" class="setup-step hidden">
+      <!-- Step 3: Permissions -->
+      <div id="setup-step-3" class="setup-step hidden">
         <div class="setup-header">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
           </svg>
-          <h2>Permissions</h2>
-          <p>We need a few permissions before you get started.</p>
+          <h2 data-i18n="setup.permTitle">Permissions</h2>
+          <p data-i18n="setup.permDesc">We need a few permissions before you get started.</p>
         </div>
 
         <div class="setup-permissions">
@@ -984,7 +1035,7 @@
               </svg>
             </div>
             <div class="setup-permission-text">
-              <span class="setup-permission-title">Commercial Emails</span>
+              <span class="setup-permission-title" data-i18n="settings.commercialEmails">Commercial Emails</span>
               <span class="setup-permission-desc">Receive product updates, tips, and promotional offers via
                 email.</span>
             </div>
@@ -998,7 +1049,7 @@
               </svg>
             </div>
             <div class="setup-permission-text">
-              <span class="setup-permission-title">Anonymous Telemetry</span>
+              <span class="setup-permission-title" data-i18n="settings.anonymousTelemetry">Anonymous Telemetry</span>
               <span class="setup-permission-desc">Help us improve by sharing anonymous usage data. No personal
                 information is collected.</span>
             </div>
@@ -1012,7 +1063,7 @@
               </svg>
             </div>
             <div class="setup-permission-text">
-              <span class="setup-permission-title">Terms of Service <span
+              <span class="setup-permission-title"><span data-i18n="setup.perm.tos">Terms of Service</span> <span
                   style="color: var(--danger-color);">*</span></span>
               <span class="setup-permission-desc">I agree to the <a href="#"
                   style="color: var(--primary-color); text-decoration: underline;">Terms of Service</a> and <a href="#"
@@ -1022,8 +1073,8 @@
         </div>
 
         <div class="setup-btn-row">
-          <button id="setup-back-btn" class="setup-back-btn">Back</button>
-          <button id="setup-continue-btn" class="auth-btn premium-btn" style="flex: 1;" disabled>Get Started</button>
+          <button id="setup-back-btn" class="setup-back-btn" data-i18n="setup.backBtn">Back</button>
+          <button id="setup-continue-btn" class="auth-btn premium-btn" style="flex: 1;" disabled data-i18n="setup.getStarted">Get Started</button>
         </div>
         <p id="setup-tos-warning" class="setup-tos-warning hidden">You must accept the Terms of Service to continue.</p>
       </div>
@@ -1031,6 +1082,9 @@
     </div>
   </div>
 
+  <script src="src/localizations/en.js"></script>
+  <script src="src/localizations/tr.js"></script>
+  <script src="src/i18n.js"></script>
   <script src="src/api.js"></script>
   <script src="src/store.js"></script>
   <script src="src/app.js"></script>

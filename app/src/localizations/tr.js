@@ -1,0 +1,143 @@
+window.locales = window.locales || {};
+window.locales.tr = {
+  // Navigation & Sidebar
+  "nav.home": "Ana Sayfa",
+  "nav.myBoards": "Tablolarım",
+  "nav.shared": "Benimle Paylaşılanlar",
+  "tooltip.addFolder": "Klasör Ekle",
+  "tooltip.addBoard": "Tablo Ekle",
+  "tooltip.joinBoard": "Tabloya Katıl",
+  "tooltip.changeAvatar": "Avatarı Değiştir",
+  "tooltip.settings": "Ayarlar",
+  "tooltip.more": "Daha Fazla",
+
+  // Profile Menu
+  "menu.relaunch": "Uygulamayı Yeniden Başlat",
+  "menu.about": "Hakkında",
+  "menu.update": "Güncellemeleri Kontrol Et",
+  "menu.logout": "Çıkış Yap",
+
+  // Board Header
+  "board.selectBoard": "Bir Tablo Seçin",
+  "tooltip.editName": "Adı Düzenle",
+  "tooltip.addCategory": "Kategori Ekle",
+  "tooltip.manageCollaborators": "Yöneticileri Yönet",
+  "tooltip.statistics": "İstatistikler",
+  "tooltip.extras": "Ekstralar",
+  "search.placeholder": "Görevlerde ara...",
+
+  // Extras Menu
+  "extras.changeBackground": "Arka Planı Değiştir",
+  "extras.addCollaborators": "Yönetici Ekle",
+  "extras.bannedUsers": "Yasaklı Kullanıcılar",
+  "extras.boardBackground": "Tablo Arka Planı",
+
+  // Home View
+  "home.welcome": "Sydex'e Hoş Geldiniz",
+  "home.subtitle": "Çalışma alanınızdaki yenilikler ve son güncellemeler.",
+  "home.latestUpdates": "Son Güncellemeler",
+  "home.updateBadge": "Güncelleme",
+  "home.newFeatureBadge": "Yeni Özellik",
+  "home.news1.date": "6 Mayıs 2026",
+  "home.news1.title": "Sydex 2.0: Yeni Nesil İş Akışı",
+  "home.news1.desc": "Yepyeni Kanban tablo sistemimizi duyurmaktan heyecan duyuyoruz. Tamamen yenilenmiş kullanıcı arayüzü, GPU hızlandırması ile daha hızlı render süreleri ve genel olarak çok daha temiz bir görünüm.",
+  "home.news2.date": "28 Nisan 2026",
+  "home.news2.title": "Bulut Senkronizasyonu Geldi",
+  "home.news2.desc": "Tablolarınızı bir daha asla kaybetmeyin. Yeni kesintisiz bulut senkronizasyonu teknolojimiz sayesinde, tüm kategorileriniz ve görevleriniz uçtan uca şifreleme ile gerçek zamanlı olarak tüm cihazlarınızda güvenle yedeklenir.",
+
+  // Empty States
+  "board.empty.title": "Bu tablo boş",
+  "board.empty.desc": "İlk kategorinizi eklemek için sağ üstteki <span style=\"display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: rgba(255,255,255,0.05); border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); font-weight: 600; vertical-align: middle; margin: 0 2px; transform: translateY(-1px);\">+</span> simgesine tıklayın.",
+  "column.empty": "Burada görev yok",
+
+  // Settings
+  "settings.title": "Ayarlar",
+  "settings.accountSecurity": "Hesap Güvenliği",
+  "settings.accountSecurityDesc": "Hesabınızı güvende tutmak için şifrenizi güncelleyin.",
+  "settings.currentPassword": "Mevcut Şifre",
+  "settings.newPassword": "Yeni Şifre",
+  "settings.updatePassword": "Şifreyi Güncelle",
+  "settings.passwordError": "En az 8 karakter, 1 büyük harf, 1 küçük harf, 1 özel karakter.",
+  "settings.preferences": "Tercihler",
+  "settings.preferencesDesc": "Uygulama deneyiminizi özelleştirin.",
+  "settings.theme": "Tema",
+  "settings.themeDesc": "Tercih ettiğiniz görünümü seçin",
+  "settings.theme.system": "Sistem Varsayılanı",
+  "settings.theme.dark": "Karanlık Mod",
+  "settings.theme.light": "Aydınlık Mod",
+  "settings.language": "Dil",
+  "settings.languageDesc": "Tercih ettiğiniz dili seçin",
+  "settings.hardwareAccel": "Donanım Hızlandırması",
+  "settings.hardwareAccelDesc": "İşleme için CPU yerine GPU kullanın.",
+  "settings.runOnStartup": "Başlangıçta Çalıştır",
+  "settings.runOnStartupDesc": "Bilgisayarınız açıldığında Sydex'i otomatik olarak başlatın.",
+  "settings.startupLocation": "Başlangıç Konumu",
+  "settings.startupLocationDesc": "Uygulama açıldığında nerenin görüneceğini seçin",
+  "settings.location.home": "Ana Sayfa",
+  "settings.location.last": "Son Konum",
+  "settings.commercialEmails": "Ticari E-postalar",
+  "settings.commercialEmailsDesc": "Ürün güncellemeleri, ipuçları ve promosyon tekliflerini e-posta ile alın.",
+  "settings.anonymousTelemetry": "Anonim Telemetri",
+  "settings.anonymousTelemetryDesc": "Anonim kullanım verilerini paylaşarak gelişmemize yardımcı olun.",
+
+  // Auth
+  "auth.loginTab": "Giriş Yap",
+  "auth.registerTab": "Kayıt Ol",
+  "auth.loginTitle": "Tekrar Hoş Geldiniz",
+  "auth.loginSubtitle": "Tablolarınıza erişmek için bilgilerinizi girin.",
+  "auth.email": "E-posta Adresi",
+  "auth.password": "Şifre",
+  "auth.signIn": "Giriş",
+  "auth.registerTitle": "Hesap Oluştur",
+  "auth.registerSubtitle": "Bize katılın ve iş akışınızda devrim yaratın.",
+  "auth.username": "Kullanıcı Adı",
+  "auth.usernameError": "En az 8 karakter",
+  "auth.createAccount": "Kayıt Ol",
+
+  // Setup Screen
+  "setup.languageTitle": "Dil Seçin",
+  "setup.languageDesc": "Devam etmeden önce tercih ettiğiniz dili seçin.",
+  "setup.themeTitle": "Çalışma Alanınızı Kurun",
+  "setup.themeDesc": "Başlamak için bir tema seçin. Bunu daha sonra Ayarlar'dan değiştirebilirsiniz.",
+  "setup.nextBtn": "İleri",
+  "setup.permTitle": "İzinler",
+  "setup.permDesc": "Başlamadan önce birkaç izne ihtiyacımız var.",
+  "setup.perm.tos": "Hizmet Şartları",
+  "setup.perm.tosDesc": "<a href=\"#\" style=\"color: var(--primary-color); text-decoration: underline;\">Hizmet Şartları</a>'nı ve <a href=\"#\" style=\"color: var(--primary-color); text-decoration: underline;\">Gizlilik Politikası</a>'nı kabul ediyorum.",
+  "setup.backBtn": "Geri",
+  "setup.getStarted": "Başla",
+  "setup.tosWarning": "Devam etmek için Hizmet Şartlarını kabul etmelisiniz.",
+
+  // Modals / Confirm
+  "modal.cancel": "İptal",
+  "modal.save": "Kaydet",
+  "modal.delete": "Sil",
+
+  // Context Menu
+  "context.rename": "Yeniden Adlandır",
+  "context.duplicate": "Çoğalt",
+  "context.removeFromFolder": "Klasörden Çıkar",
+  "context.addCategory": "Kategori Ekle",
+  "context.viewStats": "İstatistikleri Gör",
+  "context.addCollaborators": "İşbirlikçi Ekle",
+  "context.delete": "Sil",
+
+  // Notifications & Dynamic Strings
+  "notify.categoryRenamed": "Kategori yeniden adlandırıldı",
+  "notify.tasksCleared": "Görevler temizlendi",
+  "notify.categoryDeleted": "Kategori silindi",
+  "notify.folderDeleted": "Klasör silindi",
+  "notify.folderAndBoardsDeleted": "Klasör ve tabloları silindi",
+  "notify.undo": "Geri Al",
+  "notify.taskAdded": "Görev eklendi",
+  "notify.boardCreated": "Tablo oluşturuldu",
+  "greeting.goodMorning": "Günaydın",
+  "greeting.goodAfternoon": "İyi günler",
+  "greeting.goodEvening": "İyi akşamlar",
+  "greeting.welcomeBack": "Tekrar Hoş Geldiniz!",
+
+  // Stats
+  "stats.totalTasks": "Toplam Görev",
+  "stats.inThisBoard": "bu tabloda",
+  "stats.tasksByCategory": "Kategoriye Göre Görevler"
+};

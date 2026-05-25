@@ -94,15 +94,15 @@ function updateHomeGreeting(forceWelcomeBack = false) {
     // Ignore parse error
   }
 
-  let greeting = 'Good evening';
+  let greeting = window.i18n ? window.i18n.t('greeting.goodEvening') : 'Good evening';
   if (forceWelcomeBack) {
-    greeting = 'Welcome Back!';
+    greeting = window.i18n ? window.i18n.t('greeting.welcomeBack') : 'Welcome Back!';
   } else {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) {
-      greeting = 'Good morning';
+      greeting = window.i18n ? window.i18n.t('greeting.goodMorning') : 'Good morning';
     } else if (hour >= 12 && hour < 18) {
-      greeting = 'Good afternoon';
+      greeting = window.i18n ? window.i18n.t('greeting.goodAfternoon') : 'Good afternoon';
     }
   }
 
@@ -812,8 +812,8 @@ function renderActiveBoard(animate = false, oldPositions = null) {
         <line x1="3" y1="9" x2="21" y2="9"></line>
         <line x1="9" y1="21" x2="9" y2="9"></line>
       </svg>
-      <h2>This board is empty</h2>
-      <p>Click the <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: rgba(255,255,255,0.05); border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); font-weight: 600; vertical-align: middle; margin: 0 2px; transform: translateY(-1px);">+</span> icon in the top right to add your first category.</p>
+      <h2>${window.i18n ? window.i18n.t('board.empty.title') : 'This board is empty'}</h2>
+      <p>${window.i18n ? window.i18n.t('board.empty.desc') : 'Click the <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: rgba(255,255,255,0.05); border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); font-weight: 600; vertical-align: middle; margin: 0 2px; transform: translateY(-1px);">+</span> icon in the top right to add your first category.'}</p>
     `;
     boardView.appendChild(emptyState);
   } else {
@@ -1831,8 +1831,10 @@ if (themeDropdown && themeSelected && themeOptions) {
       // Close dropdown
       themeDropdown.classList.remove('open');
       
-      // (Optional) Here you would apply the actual theme change
-      // console.log('Theme changed to:', option.dataset.value);
+      // Apply theme change
+      if (window.api && window.api.setTheme) {
+        window.api.setTheme(option.dataset.value);
+      }
     };
   });
 
@@ -1840,6 +1842,54 @@ if (themeDropdown && themeSelected && themeOptions) {
   document.addEventListener('click', (e) => {
     if (!themeDropdown.contains(e.target)) {
       themeDropdown.classList.remove('open');
+    }
+  });
+}
+
+// Custom Language Dropdown Logic
+const langDropdown = document.getElementById('lang-dropdown');
+const langSelected = document.getElementById('lang-selected');
+const langOptions = document.getElementById('lang-options');
+
+if (langDropdown && langSelected && langOptions) {
+  // Load saved language
+  const savedLang = window.i18n ? window.i18n.getLanguage() : 'en';
+  const langOpts = langOptions.querySelectorAll('.dropdown-option');
+  langOpts.forEach(o => {
+    o.classList.toggle('active', o.dataset.value === savedLang);
+    if (o.dataset.value === savedLang) {
+      langSelected.querySelector('span').textContent = o.textContent;
+    }
+  });
+
+  langSelected.onclick = (e) => {
+    e.stopPropagation();
+    langDropdown.classList.toggle('open');
+  };
+
+  langOpts.forEach(option => {
+    option.onclick = () => {
+      // Update active class
+      langOpts.forEach(o => o.classList.remove('active'));
+      option.classList.add('active');
+      
+      // Update selected text
+      langSelected.querySelector('span').textContent = option.textContent;
+      
+      // Close dropdown
+      langDropdown.classList.remove('open');
+      
+      // Apply language change
+      if (window.i18n) {
+        window.i18n.setLanguage(option.dataset.value);
+      }
+    };
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!langDropdown.contains(e.target)) {
+      langDropdown.classList.remove('open');
     }
   });
 }
@@ -2953,20 +3003,34 @@ function showSetupScreen(pendingCredentials) {
   if (!setupScreen) return;
   setupScreen.classList.remove('hidden');
 
+  let selectedLang = window.i18n ? window.i18n.getLanguage() : 'en';
   let selectedTheme = 'dark';
 
   const step1 = document.getElementById('setup-step-1');
   const step2 = document.getElementById('setup-step-2');
+  const step3 = document.getElementById('setup-step-3');
   const stepDots = setupScreen.querySelectorAll('.setup-step-dot');
-  const stepLine = setupScreen.querySelector('.setup-step-line');
+  const stepLines = setupScreen.querySelectorAll('.setup-step-line');
 
   // Reset to step 1
   step1.classList.remove('hidden');
   step2.classList.add('hidden');
+  step3.classList.add('hidden');
+  stepDots.forEach(d => { d.classList.remove('active', 'done'); });
+  stepLines.forEach(l => { l.classList.remove('done'); });
   stepDots[0].classList.add('active');
-  stepDots[0].classList.remove('done');
-  stepDots[1].classList.remove('active');
-  stepLine.classList.remove('done');
+
+  // Reset language selection
+  const langCards = setupScreen.querySelectorAll('.setup-lang-card');
+  langCards.forEach(c => {
+    c.classList.remove('selected');
+    c.querySelector('.setup-lang-check').classList.add('hidden');
+  });
+  const activeLangCard = setupScreen.querySelector(`[data-lang="${selectedLang}"]`) || setupScreen.querySelector(`[data-lang="en"]`);
+  if (activeLangCard) {
+    activeLangCard.classList.add('selected');
+    activeLangCard.querySelector('.setup-lang-check').classList.remove('hidden');
+  }
 
   // Reset theme selection
   const themeCards = setupScreen.querySelectorAll('.setup-theme-card');
@@ -2985,12 +3049,43 @@ function showSetupScreen(pendingCredentials) {
   const continueBtn = document.getElementById('setup-continue-btn');
   if (continueBtn) {
     continueBtn.disabled = true;
-    continueBtn.textContent = 'Get Started';
+    continueBtn.textContent = window.i18n ? window.i18n.t('setup.getStarted') : 'Get Started';
   }
   const tosWarning = document.getElementById('setup-tos-warning');
   if (tosWarning) tosWarning.classList.add('hidden');
 
-  // --- Step 1: Theme Selection ---
+  // --- Step 1: Language Selection ---
+  langCards.forEach(card => {
+    card.addEventListener('click', () => {
+      langCards.forEach(c => {
+        c.classList.remove('selected');
+        c.querySelector('.setup-lang-check').classList.add('hidden');
+      });
+      card.classList.add('selected');
+      card.querySelector('.setup-lang-check').classList.remove('hidden');
+      selectedLang = card.dataset.lang;
+      
+      // Update i18n live
+      if (window.i18n) {
+        window.i18n.setLanguage(selectedLang);
+      }
+    });
+  });
+
+  const nextBtnLang = document.getElementById('setup-next-btn-lang');
+  if (nextBtnLang) {
+    nextBtnLang.onclick = () => {
+      // Transition to step 2
+      step1.classList.add('hidden');
+      step2.classList.remove('hidden');
+      stepDots[0].classList.remove('active');
+      stepDots[0].classList.add('done');
+      stepLines[0].classList.add('done');
+      stepDots[1].classList.add('active');
+    };
+  }
+
+  // --- Step 2: Theme Selection ---
   themeCards.forEach(card => {
     card.addEventListener('click', () => {
       themeCards.forEach(c => c.classList.remove('selected'));
@@ -3002,7 +3097,6 @@ function showSetupScreen(pendingCredentials) {
   const nextBtn = document.getElementById('setup-next-btn');
   if (nextBtn) {
     nextBtn.onclick = () => {
-      // Save theme
       localStorage.setItem('sydex-theme', selectedTheme);
 
       // Sync the settings dropdown
@@ -3018,28 +3112,28 @@ function showSetupScreen(pendingCredentials) {
         });
       }
 
-      // Transition to step 2
-      step1.classList.add('hidden');
-      step2.classList.remove('hidden');
-      stepDots[0].classList.remove('active');
-      stepDots[0].classList.add('done');
-      stepLine.classList.add('done');
-      stepDots[1].classList.add('active');
+      // Transition to step 3
+      step2.classList.add('hidden');
+      step3.classList.remove('hidden');
+      stepDots[1].classList.remove('active');
+      stepDots[1].classList.add('done');
+      stepLines[1].classList.add('done');
+      stepDots[2].classList.add('active');
     };
   }
 
-  // --- Step 2: Permissions ---
+  // --- Step 3: Permissions ---
   const backBtn = document.getElementById('setup-back-btn');
   const tosCheckbox = tosCb;
 
   if (backBtn) {
     backBtn.onclick = () => {
-      step2.classList.add('hidden');
-      step1.classList.remove('hidden');
-      stepDots[1].classList.remove('active');
-      stepLine.classList.remove('done');
-      stepDots[0].classList.remove('done');
-      stepDots[0].classList.add('active');
+      step3.classList.add('hidden');
+      step2.classList.remove('hidden');
+      stepDots[2].classList.remove('active');
+      stepLines[1].classList.remove('done');
+      stepDots[1].classList.remove('done');
+      stepDots[1].classList.add('active');
     };
   }
 
@@ -3054,7 +3148,7 @@ function showSetupScreen(pendingCredentials) {
     continueBtn.onclick = async () => {
       if (!tosCheckbox.checked) {
         tosWarning.classList.remove('hidden');
-        notify('You must accept the Terms of Service to continue', 'error');
+        notify(window.i18n ? window.i18n.t('setup.tosWarning') : 'You must accept the Terms of Service to continue', 'error');
         return;
       }
 
@@ -3088,12 +3182,12 @@ function showSetupScreen(pendingCredentials) {
           renderActiveBoard();
           updateSidebarProfile();
           updateHomeGreeting(true);
-          notify('Account created successfully', 'success');
+          notify(window.i18n ? window.i18n.t('notify.accountCreated') : 'Account created successfully', 'success');
         }, 500);
       } catch (err) {
         notify(err.message, 'error');
         continueBtn.disabled = false;
-        continueBtn.textContent = 'Get Started';
+        continueBtn.textContent = window.i18n ? window.i18n.t('setup.getStarted') : 'Get Started';
       }
     };
   }
