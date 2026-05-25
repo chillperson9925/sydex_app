@@ -787,7 +787,10 @@ function renderActiveBoard(animate = false, oldPositions = null) {
   
   const easterEggBtn = document.getElementById('easter-egg-btn');
   if (easterEggBtn) {
-    if (window.i18n && window.i18n.getLanguage() === 'tr' && Math.random() < 0.10) {
+    if (typeof window.isEasterEggLucky === 'undefined') {
+      window.isEasterEggLucky = Math.random() < 0.10;
+    }
+    if (window.i18n && window.i18n.getLanguage() === 'tr' && window.isEasterEggLucky) {
       easterEggBtn.classList.remove('hidden');
     } else {
       easterEggBtn.classList.add('hidden');
