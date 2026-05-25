@@ -34,6 +34,8 @@ const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
 const addBoardBtn = document.getElementById('add-board-btn');
 const addFolderBtn = document.getElementById('add-folder-btn');
 const addColumnBtn = document.getElementById('add-column-btn');
+const boardSearchContainer = document.getElementById('board-search-container');
+const boardSearchInput = document.getElementById('board-search-input');
 const statsBtn = document.getElementById('stats-btn');
 const collaboratorsBtn = document.getElementById('collaborators-btn');
 const editBoardTitleBtn = document.getElementById('edit-board-title-btn');
@@ -746,6 +748,7 @@ function renderActiveBoard(animate = false, oldPositions = null) {
     boardView.classList.add('hidden');
     editBoardTitleBtn.classList.add('hidden');
     if (addColumnBtn) addColumnBtn.classList.add('hidden');
+    if (boardSearchContainer) boardSearchContainer.classList.add('hidden');
     if (statsBtn) statsBtn.classList.add('hidden');
     const extrasBtn = document.getElementById('extras-btn');
     if (extrasBtn) extrasBtn.classList.add('hidden');
@@ -771,6 +774,11 @@ function renderActiveBoard(animate = false, oldPositions = null) {
 
   editBoardTitleBtn.classList.remove('hidden');
   if (addColumnBtn) addColumnBtn.classList.remove('hidden');
+  if (boardSearchContainer) boardSearchContainer.classList.remove('hidden');
+  if (boardSearchInput) {
+    boardSearchInput.value = '';
+    document.querySelectorAll('.task-card').forEach(t => t.style.display = '');
+  }
   if (statsBtn) statsBtn.classList.remove('hidden');
   const extrasBtn = document.getElementById('extras-btn');
   if (extrasBtn) extrasBtn.classList.remove('hidden');
@@ -1709,6 +1717,7 @@ if (statsBtn) {
       columnsContainer.innerHTML = '';
       
       if (addColumnBtn) addColumnBtn.classList.add('hidden');
+      if (boardSearchContainer) boardSearchContainer.classList.add('hidden');
 
       const emptyState = boardView.querySelector('.board-empty-state');
       if (emptyState) emptyState.remove();
@@ -1753,6 +1762,7 @@ if (settingsBtn) {
       activeBoardTitle.textContent = 'Settings';
       editBoardTitleBtn.classList.add('hidden');
       if (addColumnBtn) addColumnBtn.classList.add('hidden');
+      if (boardSearchContainer) boardSearchContainer.classList.add('hidden');
       if (statsBtn) statsBtn.classList.add('hidden');
     }
   };
@@ -3812,5 +3822,23 @@ if (updateBtn) {
     } else {
       notify('Updater module not available.', 'error');
     }
+  });
+}
+
+// Board Search Logic
+if (boardSearchInput) {
+  boardSearchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    const tasks = document.querySelectorAll('.task-card');
+    tasks.forEach(taskEl => {
+      // The task text is stored in the first text node
+      const textNode = taskEl.childNodes[0];
+      const text = textNode ? (textNode.nodeValue || '').toLowerCase() : '';
+      if (text.includes(query)) {
+        taskEl.style.display = '';
+      } else {
+        taskEl.style.display = 'none';
+      }
+    });
   });
 }
