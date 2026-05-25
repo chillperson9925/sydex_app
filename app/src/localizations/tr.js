@@ -25,6 +25,7 @@ window.locales.tr = {
   "tooltip.statistics": "İstatistikler",
   "tooltip.extras": "Ekstralar",
   "search.placeholder": "Görevlerde ara...",
+  "board.addTask": "+ Görev Ekle",
 
   // Extras Menu
   "extras.changeBackground": "Arka Planı Değiştir",
@@ -121,6 +122,8 @@ window.locales.tr = {
   "context.viewStats": "İstatistikleri Gör",
   "context.addCollaborators": "İşbirlikçi Ekle",
   "context.delete": "Sil",
+  "context.leaveBoard": "Tablodan Ayrıl",
+  "context.areYouSure": "Emin misiniz?",
 
   // Notifications & Dynamic Strings
   "notify.categoryRenamed": "Kategori yeniden adlandırıldı",

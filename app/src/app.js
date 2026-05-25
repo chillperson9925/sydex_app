@@ -1009,7 +1009,7 @@ function createColumnElement(column) {
   deleteBtn.onclick = () => {
     if (!colDeleteConfirmState) {
       colDeleteConfirmState = true;
-      deleteBtn.innerHTML = '<span style="font-size:12px; font-weight:600; margin-right:4px;">Are you sure?</span>' + originalColDeleteIcon;
+      deleteBtn.innerHTML = `<span style="font-size:12px; font-weight:600; margin-right:4px;">${window.i18n ? window.i18n.t('context.areYouSure') : 'Are you sure?'}</span>` + originalColDeleteIcon;
       deleteBtn.style.color = 'var(--danger-color)';
       deleteBtn.style.width = 'auto';
       deleteBtn.style.padding = '0 6px';
@@ -1166,7 +1166,7 @@ function createColumnElement(column) {
 
   const addBtn = document.createElement('button');
   addBtn.className = 'add-task-btn';
-  addBtn.innerHTML = '+ Add Task';
+  addBtn.innerHTML = window.i18n ? window.i18n.t('board.addTask') : '+ Add Task';
   addBtn.onclick = () => createInlineTask(column.id, taskList);
 
   div.appendChild(header);
@@ -3275,7 +3275,7 @@ function showContextMenu(x, y, board) {
   clearTimeout(ctxDeleteTimer);
   ctxDeleteConfirmState = false;
   if (board.isShared) {
-    deleteItem.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Leave Board`;
+    deleteItem.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> ${window.i18n ? window.i18n.t('context.leaveBoard') : 'Leave Board'}`;
   } else {
     deleteItem.innerHTML = originalDeleteHTML;
   }
@@ -3353,7 +3353,7 @@ contextMenu.querySelectorAll('.context-menu-item').forEach(item => {
       case 'delete':
         if (!ctxDeleteConfirmState) {
           ctxDeleteConfirmState = true;
-          item.innerHTML = '<span style="font-size:13px; font-weight:600;">Are you sure?</span>';
+          item.innerHTML = `<span style="font-size:13px; font-weight:600;">${window.i18n ? window.i18n.t('context.areYouSure') : 'Are you sure?'}</span>`;
           item.style.color = '#fff';
           item.style.background = 'var(--danger-color)';
           

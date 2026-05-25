@@ -25,6 +25,7 @@ window.locales.en = {
   "tooltip.statistics": "Statistics",
   "tooltip.extras": "Extras",
   "search.placeholder": "Search tasks...",
+  "board.addTask": "+ Add Task",
 
   // Extras Menu
   "extras.changeBackground": "Change Background",
@@ -121,6 +122,8 @@ window.locales.en = {
   "context.viewStats": "View Statistics",
   "context.addCollaborators": "Add Collaborators",
   "context.delete": "Delete",
+  "context.leaveBoard": "Leave Board",
+  "context.areYouSure": "Are you sure?",
 
   // Notifications & Dynamic Strings
   "notify.categoryRenamed": "Category renamed",
