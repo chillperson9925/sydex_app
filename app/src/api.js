@@ -63,6 +63,37 @@ class ApiService {
     return headers;
   }
 
+  async _fetch(url, options = {}) {
+    const res = await fetch(url, options);
+    if (res.status === 401) {
+      this._handleSessionExpired();
+      throw new Error('Session expired. Please log in again.');
+    }
+    return res;
+  }
+
+  _handleSessionExpired() {
+    if (this._sessionExpiredHandled) return;
+    this._sessionExpiredHandled = true;
+
+    this.setToken(null);
+    this.disconnectSocket();
+
+    const authScreen = document.getElementById('auth-screen');
+    if (authScreen) authScreen.classList.remove('hidden');
+
+    const boardView = document.getElementById('board-view');
+    if (boardView) boardView.classList.add('hidden');
+    const homeView = document.getElementById('home-view');
+    if (homeView) homeView.classList.add('hidden');
+
+    if (typeof notify === 'function') {
+      notify('Your session has expired. Please log in again.', 'warning', 6000);
+    }
+
+    setTimeout(() => { this._sessionExpiredHandled = false; }, 3000);
+  }
+
   async login(email, password) {
     const res = await fetch(`${BASE_URL}/auth/login`, {
       method: 'POST',
@@ -99,7 +130,7 @@ class ApiService {
   }
 
   async changePassword(currentPassword, newPassword) {
-    const res = await fetch(`${BASE_URL}/auth/password`, {
+    const res = await this._fetch(`${BASE_URL}/auth/password`, {
       method: 'PUT',
       headers: this.getHeaders(),
       body: JSON.stringify({ currentPassword, newPassword })
@@ -110,7 +141,7 @@ class ApiService {
   }
 
   async getPermissions() {
-    const res = await fetch(`${BASE_URL}/auth/permissions`, {
+    const res = await this._fetch(`${BASE_URL}/auth/permissions`, {
       headers: this.getHeaders()
     });
     const data = await res.json();
@@ -119,7 +150,7 @@ class ApiService {
   }
 
   async updatePermissions(perms) {
-    const res = await fetch(`${BASE_URL}/auth/permissions`, {
+    const res = await this._fetch(`${BASE_URL}/auth/permissions`, {
       method: 'PUT',
       headers: this.getHeaders(),
       body: JSON.stringify(perms)
@@ -130,7 +161,7 @@ class ApiService {
   }
 
   async getBoardData() {
-    const res = await fetch(`${BASE_URL}/data`, {
+    const res = await this._fetch(`${BASE_URL}/data`, {
       headers: this.getHeaders()
     });
     const data = await res.json();
@@ -139,7 +170,7 @@ class ApiService {
   }
 
   async saveBoardData(boardData) {
-    const res = await fetch(`${BASE_URL}/data`, {
+    const res = await this._fetch(`${BASE_URL}/data`, {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify(boardData)
@@ -149,7 +180,7 @@ class ApiService {
   }
 
   async generateInvite(boardId, forceNew = false) {
-    const res = await fetch(`${BASE_URL}/data/invite`, {
+    const res = await this._fetch(`${BASE_URL}/data/invite`, {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify({ boardId, forceNew })
@@ -160,7 +191,7 @@ class ApiService {
   }
 
   async joinBoard(code) {
-    const res = await fetch(`${BASE_URL}/data/join`, {
+    const res = await this._fetch(`${BASE_URL}/data/join`, {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify({ code })
@@ -171,7 +202,7 @@ class ApiService {
   }
 
   async leaveBoard(boardId) {
-    const res = await fetch(`${BASE_URL}/data/leave`, {
+    const res = await this._fetch(`${BASE_URL}/data/leave`, {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify({ boardId })
@@ -182,7 +213,7 @@ class ApiService {
   }
 
   async updateAvatar(base64Image) {
-    const res = await fetch(`${BASE_URL}/auth/avatar`, {
+    const res = await this._fetch(`${BASE_URL}/auth/avatar`, {
       method: 'PUT',
       headers: this.getHeaders(),
       body: JSON.stringify({ avatar: base64Image })
@@ -198,7 +229,7 @@ class ApiService {
   }
 
   async getCollaborators(boardId) {
-    const res = await fetch(`${BASE_URL}/data/collaborators/${boardId}`, {
+    const res = await this._fetch(`${BASE_URL}/data/collaborators/${boardId}`, {
       headers: this.getHeaders()
     });
     const data = await res.json();
@@ -207,7 +238,7 @@ class ApiService {
   }
 
   async kickCollaborator(boardId, userId) {
-    const res = await fetch(`${BASE_URL}/data/kick`, {
+    const res = await this._fetch(`${BASE_URL}/data/kick`, {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify({ boardId, userId })
@@ -218,7 +249,7 @@ class ApiService {
   }
 
   async banCollaborator(boardId, userId) {
-    const res = await fetch(`${BASE_URL}/data/ban`, {
+    const res = await this._fetch(`${BASE_URL}/data/ban`, {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify({ boardId, userId })
@@ -229,7 +260,7 @@ class ApiService {
   }
 
   async getBannedUsers(boardId) {
-    const res = await fetch(`${BASE_URL}/data/banned/${boardId}`, {
+    const res = await this._fetch(`${BASE_URL}/data/banned/${boardId}`, {
       headers: this.getHeaders()
     });
     const data = await res.json();
@@ -238,7 +269,7 @@ class ApiService {
   }
 
   async unbanUser(boardId, userId) {
-    const res = await fetch(`${BASE_URL}/data/unban`, {
+    const res = await this._fetch(`${BASE_URL}/data/unban`, {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify({ boardId, userId })
