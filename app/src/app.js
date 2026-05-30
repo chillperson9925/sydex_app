@@ -2496,7 +2496,7 @@ if (closeDropdown && closeSelected && closeOptionsEl) {
   if (window.electronAPI && window.electronAPI.getSettings) {
     window.electronAPI.getSettings()
       .then(settings => {
-        const savedClose = settings.closeBehavior || 'tray'; // Default is tray
+        const savedClose = settings.closeBehavior || 'exit'; // Default is exit
         const closeOpts = closeOptionsEl.querySelectorAll('.dropdown-option');
         closeOpts.forEach(o => {
           o.classList.toggle('active', o.dataset.value === savedClose);

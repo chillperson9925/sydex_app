@@ -28,7 +28,7 @@ if (!gotTheLock) {
 let mainWindow = null;
 let tray = null;
 let isQuitting = false;
-let closeBehavior = 'tray'; // Default close behavior is system tray
+let closeBehavior = 'exit'; // Default close behavior is exit application
 let language = 'en'; // Default language
 
 // Handle Hardware Acceleration BEFORE app is ready
@@ -181,14 +181,14 @@ ipcMain.handle('get-settings', async () => {
     const settings = JSON.parse(data);
     settings.runOnStartup = app.getLoginItemSettings().openAtLogin;
     if (settings.closeBehavior === undefined) {
-      settings.closeBehavior = 'tray';
+      settings.closeBehavior = 'exit';
     }
     return settings;
   } catch (error) {
     return { 
       hardwareAcceleration: true, 
       runOnStartup: app.getLoginItemSettings().openAtLogin,
-      closeBehavior: 'tray'
+      closeBehavior: 'exit'
     }; // Default
   }
 });
