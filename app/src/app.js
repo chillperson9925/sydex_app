@@ -1179,7 +1179,21 @@ function createColumnElement(column) {
 function createTaskElement(task, columnId) {
   const div = document.createElement('div');
   div.className = 'task-card';
-  div.textContent = task.text;
+
+  const priority = task.priority || 'medium';
+  div.classList.add(`priority-border-${priority}`);
+
+  const textSpan = document.createElement('span');
+  textSpan.className = 'task-text';
+  textSpan.textContent = task.text;
+  textSpan.style.cssText = 'display:block; line-height:1.4;';
+  div.appendChild(textSpan);
+
+  const badge = document.createElement('div');
+  badge.className = `task-priority-badge priority-${priority}`;
+  badge.textContent = window.i18n ? window.i18n.t(`priority.${priority}`) : priority;
+  div.appendChild(badge);
+
   div.draggable = true;
   div.dataset.id = task.id;
   div.dataset.columnId = columnId;
@@ -1335,7 +1349,8 @@ function startEditTask(div, task, columnId) {
   div.style.padding = '8px';
   div.style.cursor = 'default';
   div.style.display = 'flex';
-  div.style.alignItems = 'center';
+  div.style.flexDirection = 'column';
+  div.style.alignItems = 'stretch';
   div.style.gap = '6px';
 
   const textarea = document.createElement('textarea');
@@ -1371,8 +1386,47 @@ function startEditTask(div, task, columnId) {
 
   actionsDiv.appendChild(saveBtn);
   actionsDiv.appendChild(cancelBtn);
-  div.appendChild(textarea);
-  div.appendChild(actionsDiv);
+
+  const topRow = document.createElement('div');
+  topRow.style.cssText = 'display:flex; align-items:center; gap:6px; width:100%;';
+  topRow.appendChild(textarea);
+  topRow.appendChild(actionsDiv);
+
+  const priorityRow = document.createElement('div');
+  priorityRow.style.cssText = 'display:flex; justify-content:space-between; align-items:center; width:100%; margin-top:6px; border-top:1px solid rgba(255,255,255,0.05); padding-top:6px;';
+  
+  const priorityLabel = document.createElement('span');
+  priorityLabel.textContent = window.i18n ? window.i18n.t('priority.label') : 'Priority:';
+  priorityLabel.style.cssText = 'font-size:11px; color:var(--text-muted); font-weight:500;';
+  
+  const select = document.createElement('select');
+  select.className = 'task-priority-select';
+  select.style.cssText = 'background: #202020; border: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; padding: 2px 6px; border-radius: 4px; outline: none; cursor: pointer; font-family: inherit;';
+  
+  const optLow = document.createElement('option');
+  optLow.value = 'low';
+  optLow.textContent = window.i18n ? window.i18n.t('priority.low') : 'Low';
+  optLow.selected = task.priority === 'low';
+  
+  const optMed = document.createElement('option');
+  optMed.value = 'medium';
+  optMed.textContent = window.i18n ? window.i18n.t('priority.medium') : 'Medium';
+  optMed.selected = task.priority === 'medium' || !task.priority;
+  
+  const optUrg = document.createElement('option');
+  optUrg.value = 'urgent';
+  optUrg.textContent = window.i18n ? window.i18n.t('priority.urgent') : 'Urgent';
+  optUrg.selected = task.priority === 'urgent';
+  
+  select.appendChild(optLow);
+  select.appendChild(optMed);
+  select.appendChild(optUrg);
+  
+  priorityRow.appendChild(priorityLabel);
+  priorityRow.appendChild(select);
+
+  div.appendChild(topRow);
+  div.appendChild(priorityRow);
 
   textarea.focus();
   textarea.setSelectionRange(textarea.value.length, textarea.value.length);
@@ -1382,8 +1436,9 @@ function startEditTask(div, task, columnId) {
     if (finished) return;
     finished = true;
     const newText = textarea.value.trim();
-    if (newText && newText !== currentText) {
-      store.editTask(columnId, task.id, newText);
+    const newPriority = select.value;
+    if (newText && (newText !== currentText || newPriority !== task.priority)) {
+      store.editTask(columnId, task.id, newText, newPriority);
     }
     renderActiveBoard();
   };
@@ -2514,7 +2569,8 @@ function createInlineTask(columnId, taskList) {
   div.style.padding = '8px';
   div.style.animation = 'inlineSlideIn 0.2s ease-out';
   div.style.display = 'flex';
-  div.style.alignItems = 'center';
+  div.style.flexDirection = 'column';
+  div.style.alignItems = 'stretch';
   div.style.gap = '6px';
 
   const input = document.createElement('textarea');
@@ -2551,8 +2607,44 @@ function createInlineTask(columnId, taskList) {
   actionsDiv.appendChild(saveBtn);
   actionsDiv.appendChild(cancelBtn);
 
-  div.appendChild(input);
-  div.appendChild(actionsDiv);
+  const topRow = document.createElement('div');
+  topRow.style.cssText = 'display:flex; align-items:center; gap:6px; width:100%;';
+  topRow.appendChild(input);
+  topRow.appendChild(actionsDiv);
+
+  const priorityRow = document.createElement('div');
+  priorityRow.style.cssText = 'display:flex; justify-content:space-between; align-items:center; width:100%; margin-top:6px; border-top:1px solid rgba(255,255,255,0.05); padding-top:6px;';
+  
+  const priorityLabel = document.createElement('span');
+  priorityLabel.textContent = window.i18n ? window.i18n.t('priority.label') : 'Priority:';
+  priorityLabel.style.cssText = 'font-size:11px; color:var(--text-muted); font-weight:500;';
+  
+  const select = document.createElement('select');
+  select.className = 'task-priority-select';
+  select.style.cssText = 'background: #202020; border: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; padding: 2px 6px; border-radius: 4px; outline: none; cursor: pointer; font-family: inherit;';
+  
+  const optLow = document.createElement('option');
+  optLow.value = 'low';
+  optLow.textContent = window.i18n ? window.i18n.t('priority.low') : 'Low';
+  
+  const optMed = document.createElement('option');
+  optMed.value = 'medium';
+  optMed.textContent = window.i18n ? window.i18n.t('priority.medium') : 'Medium';
+  optMed.selected = true;
+  
+  const optUrg = document.createElement('option');
+  optUrg.value = 'urgent';
+  optUrg.textContent = window.i18n ? window.i18n.t('priority.urgent') : 'Urgent';
+  
+  select.appendChild(optLow);
+  select.appendChild(optMed);
+  select.appendChild(optUrg);
+  
+  priorityRow.appendChild(priorityLabel);
+  priorityRow.appendChild(select);
+
+  div.appendChild(topRow);
+  div.appendChild(priorityRow);
   taskList.prepend(div);
   
   // Scroll to top
@@ -2565,13 +2657,14 @@ function createInlineTask(columnId, taskList) {
     if (saved) return;
     saved = true;
     const text = input.value.trim();
+    const priority = select.value;
     if (text) {
       div.style.transition = 'all 0.2s ease';
       div.style.opacity = '0';
       div.style.transform = 'scale(0.95)';
       setTimeout(() => {
         div.remove();
-        store.addTask(columnId, text);
+        store.addTask(columnId, text, priority);
         renderActiveBoard();
       }, 180);
     } else {

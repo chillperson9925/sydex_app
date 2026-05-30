@@ -146,5 +146,9 @@ window.locales.tr = {
   // Stats
   "stats.totalTasks": "Toplam Görev",
   "stats.inThisBoard": "bu tabloda",
-  "stats.tasksByCategory": "Kategoriye Göre Görevler"
+  "stats.tasksByCategory": "Kategoriye Göre Görevler",
+  "priority.label": "Öncelik:",
+  "priority.low": "Düşük",
+  "priority.medium": "Orta",
+  "priority.urgent": "Acil"
 };

@@ -202,12 +202,12 @@ class Store {
     this.save();
   }
 
-  addTask(colId, text) {
+  addTask(colId, text, priority = 'medium') {
     const board = this.getActiveBoard();
     if (board) {
       const col = board.columns.find(c => c.id === colId);
       if (col) {
-        const newTask = { id: 't' + Date.now().toString(), text };
+        const newTask = { id: 't' + Date.now().toString(), text, priority };
         col.tasks.unshift(newTask);
         this.save();
         return newTask;
@@ -215,7 +215,7 @@ class Store {
     }
   }
 
-  editTask(colId, taskId, newText) {
+  editTask(colId, taskId, newText, newPriority) {
     const board = this.getActiveBoard();
     if (board) {
       const col = board.columns.find(c => c.id === colId);
@@ -223,6 +223,9 @@ class Store {
         const task = col.tasks.find(t => t.id === taskId);
         if (task) {
           task.text = newText;
+          if (newPriority !== undefined) {
+            task.priority = newPriority;
+          }
           this.save();
           return task;
         }

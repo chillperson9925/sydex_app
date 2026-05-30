@@ -146,5 +146,9 @@ window.locales.en = {
   // Stats
   "stats.totalTasks": "Total Tasks",
   "stats.inThisBoard": "in this board",
-  "stats.tasksByCategory": "Tasks by Category"
+  "stats.tasksByCategory": "Tasks by Category",
+  "priority.label": "Priority:",
+  "priority.low": "Low",
+  "priority.medium": "Medium",
+  "priority.urgent": "Urgent"
 };
