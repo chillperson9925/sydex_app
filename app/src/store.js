@@ -202,12 +202,12 @@ class Store {
     this.save();
   }
 
-  addTask(colId, text, priority = 'none') {
+  addTask(colId, text, priority = 'none', assignedTo = 'none') {
     const board = this.getActiveBoard();
     if (board) {
       const col = board.columns.find(c => c.id === colId);
       if (col) {
-        const newTask = { id: 't' + Date.now().toString(), text, priority };
+        const newTask = { id: 't' + Date.now().toString(), text, priority, assignedTo };
         col.tasks.unshift(newTask);
         this.save();
         return newTask;
@@ -215,7 +215,7 @@ class Store {
     }
   }
 
-  editTask(colId, taskId, newText, newPriority) {
+  editTask(colId, taskId, newText, newPriority, newAssignedTo) {
     const board = this.getActiveBoard();
     if (board) {
       const col = board.columns.find(c => c.id === colId);
@@ -225,6 +225,9 @@ class Store {
           task.text = newText;
           if (newPriority !== undefined) {
             task.priority = newPriority;
+          }
+          if (newAssignedTo !== undefined) {
+            task.assignedTo = newAssignedTo;
           }
           this.save();
           return task;

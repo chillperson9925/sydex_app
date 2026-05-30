@@ -52,6 +52,7 @@ let modalAction = null; // To keep track of what the modal is saving
 let currentActionContext = null; // Store ID context for modal
 let draggedTask = null; // Reference to currently dragged task
 let draggedColumn = null; // Reference to currently dragged column
+let activeBoardCollaborators = [];
 
 function updateSidebarProfile() {
   const sidebarUsername = document.getElementById('sidebar-username');
@@ -74,6 +75,21 @@ function updateSidebarProfile() {
     }
   } catch(e) {
     console.error('Failed to parse sydex_user', e);
+  }
+}
+
+async function loadActiveBoardCollaborators() {
+  const board = store.getActiveBoard();
+  if (board && (board.hasCollaborators || board.isShared)) {
+    try {
+      const data = await window.api.getCollaborators(board.id);
+      activeBoardCollaborators = data.collaborators || [];
+    } catch (err) {
+      console.error('Failed to load active board collaborators', err);
+      activeBoardCollaborators = [];
+    }
+  } else {
+    activeBoardCollaborators = [];
   }
 }
 
@@ -717,6 +733,7 @@ function createBoardItem(board, isNested) {
 
 function renderActiveBoard(animate = false, oldPositions = null) {
   const board = store.getActiveBoard();
+  loadActiveBoardCollaborators();
   columnsContainer.innerHTML = '';
   
   if (animate) {
@@ -1188,11 +1205,35 @@ function createTaskElement(task, columnId) {
   textSpan.style.cssText = 'display:block; line-height:1.4;';
   div.appendChild(textSpan);
 
+  const badgesRow = document.createElement('div');
+  badgesRow.style.cssText = 'display: flex; flex-wrap: wrap; gap: 6px; align-items: center;';
+
   if (priority !== 'none') {
     const badge = document.createElement('div');
     badge.className = `task-priority-badge priority-${priority}`;
     badge.textContent = window.i18n ? window.i18n.t(`priority.${priority}`) : priority;
-    div.appendChild(badge);
+    badge.style.marginTop = '0';
+    badgesRow.appendChild(badge);
+  }
+
+  const assignee = task.assignedTo || 'none';
+  if (assignee !== 'none') {
+    const badge = document.createElement('div');
+    badge.className = 'task-assignee-badge';
+    badge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; background: rgba(255, 255, 255, 0.08); color: var(--text-muted); padding: 2px 6px; font-size: 11px; border-radius: 4px; font-weight: 500;';
+    badge.innerHTML = `
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80px;">${assignee}</span>
+    `;
+    badgesRow.appendChild(badge);
+  }
+
+  if (badgesRow.children.length > 0) {
+    badgesRow.style.marginTop = '6px';
+    div.appendChild(badgesRow);
   }
 
   div.draggable = true;
@@ -1457,6 +1498,132 @@ function createCustomPriorityDropdown(currentValue, onChange) {
   return container;
 }
 
+function createCustomAssigneeDropdown(currentValue, onChange) {
+  const container = document.createElement('div');
+  container.className = 'custom-dropdown';
+  container.style.width = '110px';
+
+  const selectedDiv = document.createElement('div');
+  selectedDiv.className = 'dropdown-selected';
+  selectedDiv.style.cssText = 'padding: 4px 8px; border-radius: 6px; font-size: 11px;';
+
+  const selectedSpan = document.createElement('span');
+  selectedDiv.appendChild(selectedSpan);
+
+  // SVG arrow
+  selectedDiv.insertAdjacentHTML('beforeend', `
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  `);
+
+  const optionsDiv = document.createElement('div');
+  optionsDiv.className = 'dropdown-options';
+  optionsDiv.style.cssText = 'top: calc(100% + 2px); min-width: 110px; max-height: 150px; overflow-y: auto;';
+
+  const optionsList = [
+    { value: 'none', label: window.i18n ? window.i18n.t('priority.none') : 'None' }
+  ];
+
+  activeBoardCollaborators.forEach(c => {
+    if (c.username && !optionsList.some(o => o.value === c.username)) {
+      optionsList.push({ value: c.username, label: c.username });
+    }
+  });
+
+  if (currentValue && currentValue !== 'none' && !optionsList.some(o => o.value === currentValue)) {
+    optionsList.push({ value: currentValue, label: currentValue });
+  }
+
+  let selectedValue = currentValue || 'none';
+
+  const updateSelectedDisplay = (val) => {
+    const item = optionsList.find(p => p.value === val);
+    selectedSpan.textContent = item ? item.label : val;
+    
+    Array.from(optionsDiv.children).forEach(opt => {
+      opt.classList.toggle('active', opt.dataset.value === val);
+    });
+  };
+
+  optionsList.forEach(p => {
+    const opt = document.createElement('div');
+    opt.className = 'dropdown-option';
+    opt.dataset.value = p.value;
+    opt.textContent = p.label;
+    opt.style.cssText = 'padding: 6px 8px; font-size: 11px;';
+    opt.onclick = (e) => {
+      e.stopPropagation();
+      selectedValue = p.value;
+      updateSelectedDisplay(p.value);
+      container.classList.remove('open');
+      container.style.zIndex = '';
+      const taskCard = container.closest('.task-card');
+      if (taskCard) {
+        taskCard.style.zIndex = '';
+      }
+      if (onChange) onChange(p.value);
+    };
+    optionsDiv.appendChild(opt);
+  });
+
+  updateSelectedDisplay(selectedValue);
+
+  selectedDiv.onclick = (e) => {
+    e.stopPropagation();
+    
+    document.querySelectorAll('.custom-dropdown.open').forEach(d => {
+      if (d !== container) {
+        d.classList.remove('open');
+        d.style.zIndex = '';
+        const tc = d.closest('.task-card');
+        if (tc) tc.style.zIndex = '';
+      }
+    });
+
+    const isOpen = container.classList.toggle('open');
+    if (isOpen) {
+      container.style.zIndex = '1000';
+      const taskCard = container.closest('.task-card');
+      if (taskCard) {
+        taskCard.style.zIndex = '100';
+      }
+    } else {
+      container.style.zIndex = '';
+      const taskCard = container.closest('.task-card');
+      if (taskCard) {
+        taskCard.style.zIndex = '';
+      }
+    }
+  };
+
+  const clickOutsideHandler = (e) => {
+    if (!document.body.contains(container)) {
+      document.removeEventListener('click', clickOutsideHandler);
+      return;
+    }
+    if (!container.contains(e.target)) {
+      container.classList.remove('open');
+      container.style.zIndex = '';
+      const taskCard = container.closest('.task-card');
+      if (taskCard) {
+        taskCard.style.zIndex = '';
+      }
+    }
+  };
+  document.addEventListener('click', clickOutsideHandler);
+
+  container.appendChild(selectedDiv);
+  container.appendChild(optionsDiv);
+
+  Object.defineProperty(container, 'value', {
+    get: () => selectedValue,
+    configurable: true
+  });
+
+  return container;
+}
+
 function startEditTask(div, task, columnId) {
   if (div.classList.contains('editing')) return;
   div.classList.add('editing');
@@ -1527,6 +1694,23 @@ function startEditTask(div, task, columnId) {
   div.appendChild(topRow);
   div.appendChild(priorityRow);
 
+  let assigneeSelect = null;
+  const board = store.getActiveBoard();
+  if (board && (board.hasCollaborators || board.isShared)) {
+    const assigneeRow = document.createElement('div');
+    assigneeRow.style.cssText = 'display:flex; justify-content:space-between; align-items:center; width:100%; margin-top:6px; border-top:1px solid rgba(255,255,255,0.05); padding-top:6px;';
+    
+    const assigneeLabel = document.createElement('span');
+    assigneeLabel.textContent = window.i18n ? window.i18n.t('assignee.label') : 'Assignee:';
+    assigneeLabel.style.cssText = 'font-size:11px; color:var(--text-muted); font-weight:500;';
+    
+    assigneeSelect = createCustomAssigneeDropdown(task.assignedTo || 'none');
+    
+    assigneeRow.appendChild(assigneeLabel);
+    assigneeRow.appendChild(assigneeSelect);
+    div.appendChild(assigneeRow);
+  }
+
   textarea.focus();
   textarea.setSelectionRange(textarea.value.length, textarea.value.length);
 
@@ -1536,8 +1720,9 @@ function startEditTask(div, task, columnId) {
     finished = true;
     const newText = textarea.value.trim();
     const newPriority = select.value;
-    if (newText && (newText !== currentText || newPriority !== task.priority)) {
-      store.editTask(columnId, task.id, newText, newPriority);
+    const newAssignee = assigneeSelect ? assigneeSelect.value : (task.assignedTo || 'none');
+    if (newText && (newText !== currentText || newPriority !== task.priority || newAssignee !== task.assignedTo)) {
+      store.editTask(columnId, task.id, newText, newPriority, newAssignee);
     }
     renderActiveBoard();
   };
@@ -2725,6 +2910,24 @@ function createInlineTask(columnId, taskList) {
 
   div.appendChild(topRow);
   div.appendChild(priorityRow);
+
+  let assigneeSelect = null;
+  const board = store.getActiveBoard();
+  if (board && (board.hasCollaborators || board.isShared)) {
+    const assigneeRow = document.createElement('div');
+    assigneeRow.style.cssText = 'display:flex; justify-content:space-between; align-items:center; width:100%; margin-top:6px; border-top:1px solid rgba(255,255,255,0.05); padding-top:6px;';
+    
+    const assigneeLabel = document.createElement('span');
+    assigneeLabel.textContent = window.i18n ? window.i18n.t('assignee.label') : 'Assignee:';
+    assigneeLabel.style.cssText = 'font-size:11px; color:var(--text-muted); font-weight:500;';
+    
+    assigneeSelect = createCustomAssigneeDropdown('none');
+    
+    assigneeRow.appendChild(assigneeLabel);
+    assigneeRow.appendChild(assigneeSelect);
+    div.appendChild(assigneeRow);
+  }
+
   taskList.prepend(div);
   
   // Scroll to top
@@ -2738,13 +2941,14 @@ function createInlineTask(columnId, taskList) {
     saved = true;
     const text = input.value.trim();
     const priority = select.value;
+    const assignee = assigneeSelect ? assigneeSelect.value : 'none';
     if (text) {
       div.style.transition = 'all 0.2s ease';
       div.style.opacity = '0';
       div.style.transform = 'scale(0.95)';
       setTimeout(() => {
         div.remove();
-        store.addTask(columnId, text, priority);
+        store.addTask(columnId, text, priority, assignee);
         renderActiveBoard();
       }, 180);
     } else {

@@ -151,5 +151,6 @@ window.locales.tr = {
   "priority.none": "Yok",
   "priority.low": "Düşük",
   "priority.medium": "Orta",
-  "priority.urgent": "Acil"
+  "priority.urgent": "Acil",
+  "assignee.label": "Kişi:"
 };
