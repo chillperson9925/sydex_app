@@ -1335,6 +1335,9 @@ function createTaskElement(task, columnId) {
     draggedTask = null;
   });
 
+  return div;
+}
+
 function createCustomPriorityDropdown(currentValue, onChange) {
   const container = document.createElement('div');
   container.className = 'custom-dropdown';
