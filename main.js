@@ -225,11 +225,22 @@ ipcMain.handle('get-version', () => {
 // Auto Updater IPC Handlers
 autoUpdater.autoDownload = false;
 
+function cleanUpdaterError(err) {
+  let msg = err ? (err.message || String(err)) : 'Unknown error';
+  if (msg.includes('latest.yml') && (msg.includes('404') || msg.includes('not found'))) {
+    return 'Update metadata (latest.yml) is missing from the GitHub release.';
+  }
+  if (msg.includes('HttpError')) {
+    return msg.split('\n')[0];
+  }
+  return msg;
+}
+
 ipcMain.handle('check-for-updates', () => {
   return new Promise((resolve) => {
     const onAvailable = (info) => { cleanup(); resolve({ available: true, info }); };
     const onNotAvailable = () => { cleanup(); resolve({ available: false }); };
-    const onError = (err) => { cleanup(); resolve({ available: false, error: err.message }); };
+    const onError = (err) => { cleanup(); resolve({ available: false, error: cleanUpdaterError(err) }); };
     
     const cleanup = () => {
       autoUpdater.removeListener('update-available', onAvailable);
@@ -249,7 +260,7 @@ ipcMain.handle('check-for-updates', () => {
       }
       autoUpdater.checkForUpdates().catch(err => {
         cleanup();
-        resolve({ available: false, error: err.message });
+        resolve({ available: false, error: cleanUpdaterError(err) });
       });
     } catch (e) {
       cleanup();
