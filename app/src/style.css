@@ -2555,18 +2555,6 @@ textarea,
 }
 
 /* Task Priority Styling */
-.task-card.priority-border-low {
-  border-left: 3px solid rgba(255, 255, 255, 0.25) !important;
-}
-
-.task-card.priority-border-medium {
-  border-left: 3px solid var(--warning-color) !important;
-}
-
-.task-card.priority-border-urgent {
-  border-left: 3px solid var(--danger-color) !important;
-}
-
 .task-priority-badge {
   display: inline-flex;
   align-items: center;
@@ -2578,19 +2566,6 @@ textarea,
   border-radius: 4px;
   margin-top: 6px;
   width: max-content;
-}
-
-.task-priority-badge.priority-low {
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-muted);
-}
-
-.task-priority-badge.priority-medium {
-  background: rgba(251, 191, 36, 0.15);
-  color: var(--warning-color);
-}
-
-.task-priority-badge.priority-urgent {
-  background: rgba(239, 68, 68, 0.15);
-  color: var(--danger-color);
 }

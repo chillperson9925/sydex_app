@@ -202,7 +202,7 @@ class Store {
     this.save();
   }
 
-  addTask(colId, text, priority = 'medium') {
+  addTask(colId, text, priority = 'none') {
     const board = this.getActiveBoard();
     if (board) {
       const col = board.columns.find(c => c.id === colId);

@@ -1180,8 +1180,7 @@ function createTaskElement(task, columnId) {
   const div = document.createElement('div');
   div.className = 'task-card';
 
-  const priority = task.priority || 'medium';
-  div.classList.add(`priority-border-${priority}`);
+  const priority = task.priority || 'none';
 
   const textSpan = document.createElement('span');
   textSpan.className = 'task-text';
@@ -1189,10 +1188,12 @@ function createTaskElement(task, columnId) {
   textSpan.style.cssText = 'display:block; line-height:1.4;';
   div.appendChild(textSpan);
 
-  const badge = document.createElement('div');
-  badge.className = `task-priority-badge priority-${priority}`;
-  badge.textContent = window.i18n ? window.i18n.t(`priority.${priority}`) : priority;
-  div.appendChild(badge);
+  if (priority !== 'none') {
+    const badge = document.createElement('div');
+    badge.className = `task-priority-badge priority-${priority}`;
+    badge.textContent = window.i18n ? window.i18n.t(`priority.${priority}`) : priority;
+    div.appendChild(badge);
+  }
 
   div.draggable = true;
   div.dataset.id = task.id;
@@ -1403,6 +1404,11 @@ function startEditTask(div, task, columnId) {
   select.className = 'task-priority-select';
   select.style.cssText = 'background: #202020; border: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; padding: 2px 6px; border-radius: 4px; outline: none; cursor: pointer; font-family: inherit;';
   
+  const optNone = document.createElement('option');
+  optNone.value = 'none';
+  optNone.textContent = window.i18n ? window.i18n.t('priority.none') : 'None';
+  optNone.selected = !task.priority || task.priority === 'none';
+
   const optLow = document.createElement('option');
   optLow.value = 'low';
   optLow.textContent = window.i18n ? window.i18n.t('priority.low') : 'Low';
@@ -1411,13 +1417,14 @@ function startEditTask(div, task, columnId) {
   const optMed = document.createElement('option');
   optMed.value = 'medium';
   optMed.textContent = window.i18n ? window.i18n.t('priority.medium') : 'Medium';
-  optMed.selected = task.priority === 'medium' || !task.priority;
+  optMed.selected = task.priority === 'medium';
   
   const optUrg = document.createElement('option');
   optUrg.value = 'urgent';
   optUrg.textContent = window.i18n ? window.i18n.t('priority.urgent') : 'Urgent';
   optUrg.selected = task.priority === 'urgent';
   
+  select.appendChild(optNone);
   select.appendChild(optLow);
   select.appendChild(optMed);
   select.appendChild(optUrg);
@@ -2623,6 +2630,11 @@ function createInlineTask(columnId, taskList) {
   select.className = 'task-priority-select';
   select.style.cssText = 'background: #202020; border: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; padding: 2px 6px; border-radius: 4px; outline: none; cursor: pointer; font-family: inherit;';
   
+  const optNone = document.createElement('option');
+  optNone.value = 'none';
+  optNone.textContent = window.i18n ? window.i18n.t('priority.none') : 'None';
+  optNone.selected = true;
+
   const optLow = document.createElement('option');
   optLow.value = 'low';
   optLow.textContent = window.i18n ? window.i18n.t('priority.low') : 'Low';
@@ -2630,12 +2642,12 @@ function createInlineTask(columnId, taskList) {
   const optMed = document.createElement('option');
   optMed.value = 'medium';
   optMed.textContent = window.i18n ? window.i18n.t('priority.medium') : 'Medium';
-  optMed.selected = true;
   
   const optUrg = document.createElement('option');
   optUrg.value = 'urgent';
   optUrg.textContent = window.i18n ? window.i18n.t('priority.urgent') : 'Urgent';
   
+  select.appendChild(optNone);
   select.appendChild(optLow);
   select.appendChild(optMed);
   select.appendChild(optUrg);

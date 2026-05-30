@@ -148,6 +148,7 @@ window.locales.en = {
   "stats.inThisBoard": "in this board",
   "stats.tasksByCategory": "Tasks by Category",
   "priority.label": "Priority:",
+  "priority.none": "None",
   "priority.low": "Low",
   "priority.medium": "Medium",
   "priority.urgent": "Urgent"
