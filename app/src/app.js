@@ -1335,7 +1335,123 @@ function createTaskElement(task, columnId) {
     draggedTask = null;
   });
 
-  return div;
+function createCustomPriorityDropdown(currentValue, onChange) {
+  const container = document.createElement('div');
+  container.className = 'custom-dropdown';
+  container.style.width = '100px';
+
+  const selectedDiv = document.createElement('div');
+  selectedDiv.className = 'dropdown-selected';
+  selectedDiv.style.cssText = 'padding: 4px 8px; border-radius: 6px; font-size: 11px;';
+
+  const selectedSpan = document.createElement('span');
+  selectedDiv.appendChild(selectedSpan);
+
+  // SVG arrow
+  selectedDiv.insertAdjacentHTML('beforeend', `
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  `);
+
+  const optionsDiv = document.createElement('div');
+  optionsDiv.className = 'dropdown-options';
+  optionsDiv.style.cssText = 'top: calc(100% + 2px); min-width: 100px;';
+
+  const priorities = [
+    { value: 'none', label: window.i18n ? window.i18n.t('priority.none') : 'None' },
+    { value: 'low', label: window.i18n ? window.i18n.t('priority.low') : 'Low' },
+    { value: 'medium', label: window.i18n ? window.i18n.t('priority.medium') : 'Medium' },
+    { value: 'urgent', label: window.i18n ? window.i18n.t('priority.urgent') : 'Urgent' }
+  ];
+
+  let selectedValue = currentValue || 'none';
+
+  const updateSelectedDisplay = (val) => {
+    const item = priorities.find(p => p.value === val);
+    selectedSpan.textContent = item ? item.label : val;
+    
+    Array.from(optionsDiv.children).forEach(opt => {
+      opt.classList.toggle('active', opt.dataset.value === val);
+    });
+  };
+
+  priorities.forEach(p => {
+    const opt = document.createElement('div');
+    opt.className = 'dropdown-option';
+    opt.dataset.value = p.value;
+    opt.textContent = p.label;
+    opt.style.cssText = 'padding: 6px 8px; font-size: 11px;';
+    opt.onclick = (e) => {
+      e.stopPropagation();
+      selectedValue = p.value;
+      updateSelectedDisplay(p.value);
+      container.classList.remove('open');
+      container.style.zIndex = '';
+      const taskCard = container.closest('.task-card');
+      if (taskCard) {
+        taskCard.style.zIndex = '';
+      }
+      if (onChange) onChange(p.value);
+    };
+    optionsDiv.appendChild(opt);
+  });
+
+  updateSelectedDisplay(selectedValue);
+
+  selectedDiv.onclick = (e) => {
+    e.stopPropagation();
+    
+    document.querySelectorAll('.custom-dropdown.open').forEach(d => {
+      if (d !== container) {
+        d.classList.remove('open');
+        d.style.zIndex = '';
+        const tc = d.closest('.task-card');
+        if (tc) tc.style.zIndex = '';
+      }
+    });
+
+    const isOpen = container.classList.toggle('open');
+    if (isOpen) {
+      container.style.zIndex = '1000';
+      const taskCard = container.closest('.task-card');
+      if (taskCard) {
+        taskCard.style.zIndex = '100';
+      }
+    } else {
+      container.style.zIndex = '';
+      const taskCard = container.closest('.task-card');
+      if (taskCard) {
+        taskCard.style.zIndex = '';
+      }
+    }
+  };
+
+  const clickOutsideHandler = (e) => {
+    if (!document.body.contains(container)) {
+      document.removeEventListener('click', clickOutsideHandler);
+      return;
+    }
+    if (!container.contains(e.target)) {
+      container.classList.remove('open');
+      container.style.zIndex = '';
+      const taskCard = container.closest('.task-card');
+      if (taskCard) {
+        taskCard.style.zIndex = '';
+      }
+    }
+  };
+  document.addEventListener('click', clickOutsideHandler);
+
+  container.appendChild(selectedDiv);
+  container.appendChild(optionsDiv);
+
+  Object.defineProperty(container, 'value', {
+    get: () => selectedValue,
+    configurable: true
+  });
+
+  return container;
 }
 
 function startEditTask(div, task, columnId) {
@@ -1400,34 +1516,7 @@ function startEditTask(div, task, columnId) {
   priorityLabel.textContent = window.i18n ? window.i18n.t('priority.label') : 'Priority:';
   priorityLabel.style.cssText = 'font-size:11px; color:var(--text-muted); font-weight:500;';
   
-  const select = document.createElement('select');
-  select.className = 'task-priority-select';
-  select.style.cssText = 'background: #202020; border: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; padding: 2px 6px; border-radius: 4px; outline: none; cursor: pointer; font-family: inherit;';
-  
-  const optNone = document.createElement('option');
-  optNone.value = 'none';
-  optNone.textContent = window.i18n ? window.i18n.t('priority.none') : 'None';
-  optNone.selected = !task.priority || task.priority === 'none';
-
-  const optLow = document.createElement('option');
-  optLow.value = 'low';
-  optLow.textContent = window.i18n ? window.i18n.t('priority.low') : 'Low';
-  optLow.selected = task.priority === 'low';
-  
-  const optMed = document.createElement('option');
-  optMed.value = 'medium';
-  optMed.textContent = window.i18n ? window.i18n.t('priority.medium') : 'Medium';
-  optMed.selected = task.priority === 'medium';
-  
-  const optUrg = document.createElement('option');
-  optUrg.value = 'urgent';
-  optUrg.textContent = window.i18n ? window.i18n.t('priority.urgent') : 'Urgent';
-  optUrg.selected = task.priority === 'urgent';
-  
-  select.appendChild(optNone);
-  select.appendChild(optLow);
-  select.appendChild(optMed);
-  select.appendChild(optUrg);
+  const select = createCustomPriorityDropdown(task.priority || 'none');
   
   priorityRow.appendChild(priorityLabel);
   priorityRow.appendChild(select);
@@ -2626,31 +2715,7 @@ function createInlineTask(columnId, taskList) {
   priorityLabel.textContent = window.i18n ? window.i18n.t('priority.label') : 'Priority:';
   priorityLabel.style.cssText = 'font-size:11px; color:var(--text-muted); font-weight:500;';
   
-  const select = document.createElement('select');
-  select.className = 'task-priority-select';
-  select.style.cssText = 'background: #202020; border: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; padding: 2px 6px; border-radius: 4px; outline: none; cursor: pointer; font-family: inherit;';
-  
-  const optNone = document.createElement('option');
-  optNone.value = 'none';
-  optNone.textContent = window.i18n ? window.i18n.t('priority.none') : 'None';
-  optNone.selected = true;
-
-  const optLow = document.createElement('option');
-  optLow.value = 'low';
-  optLow.textContent = window.i18n ? window.i18n.t('priority.low') : 'Low';
-  
-  const optMed = document.createElement('option');
-  optMed.value = 'medium';
-  optMed.textContent = window.i18n ? window.i18n.t('priority.medium') : 'Medium';
-  
-  const optUrg = document.createElement('option');
-  optUrg.value = 'urgent';
-  optUrg.textContent = window.i18n ? window.i18n.t('priority.urgent') : 'Urgent';
-  
-  select.appendChild(optNone);
-  select.appendChild(optLow);
-  select.appendChild(optMed);
-  select.appendChild(optUrg);
+  const select = createCustomPriorityDropdown('none');
   
   priorityRow.appendChild(priorityLabel);
   priorityRow.appendChild(select);
