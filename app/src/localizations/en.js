@@ -152,5 +152,7 @@ window.locales.en = {
   "priority.low": "Low",
   "priority.medium": "Medium",
   "priority.urgent": "Urgent",
-  "assignee.label": "Assignee:"
+  "assignee.label": "Assignee:",
+  "filter.allPriorities": "All Priorities",
+  "filter.allAssignees": "All Assignees"
 };

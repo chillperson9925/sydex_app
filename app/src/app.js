@@ -53,6 +53,8 @@ let currentActionContext = null; // Store ID context for modal
 let draggedTask = null; // Reference to currently dragged task
 let draggedColumn = null; // Reference to currently dragged column
 let activeBoardCollaborators = [];
+let currentPriorityFilter = 'all';
+let currentAssigneeFilter = 'all';
 
 function updateSidebarProfile() {
   const sidebarUsername = document.getElementById('sidebar-username');
@@ -84,6 +86,7 @@ async function loadActiveBoardCollaborators() {
     try {
       const data = await window.api.getCollaborators(board.id);
       activeBoardCollaborators = data.collaborators || [];
+      renderSearchFilters();
     } catch (err) {
       console.error('Failed to load active board collaborators', err);
       activeBoardCollaborators = [];
@@ -91,6 +94,180 @@ async function loadActiveBoardCollaborators() {
   } else {
     activeBoardCollaborators = [];
   }
+}
+
+function createSearchFilterDropdown(options, defaultValue, onChange) {
+  const container = document.createElement('div');
+  container.className = 'custom-dropdown';
+  container.style.width = '120px';
+  container.style.marginLeft = '6px';
+
+  const selectedDiv = document.createElement('div');
+  selectedDiv.className = 'dropdown-selected';
+  selectedDiv.style.cssText = 'padding: 6px 10px; border-radius: 6px; font-size: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-main); height: 30px; display: flex; align-items: center; justify-content: space-between;';
+
+  const selectedSpan = document.createElement('span');
+  selectedSpan.style.cssText = 'overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 90px;';
+  selectedDiv.appendChild(selectedSpan);
+
+  // SVG arrow
+  selectedDiv.insertAdjacentHTML('beforeend', `
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px; flex-shrink: 0;">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  `);
+
+  const optionsDiv = document.createElement('div');
+  optionsDiv.className = 'dropdown-options';
+  optionsDiv.style.cssText = 'top: calc(100% + 4px); min-width: 120px; max-height: 200px; overflow-y: auto; z-index: 1001;';
+
+  let selectedValue = defaultValue;
+
+  const updateSelectedDisplay = (val) => {
+    const item = options.find(p => p.value === val);
+    selectedSpan.textContent = item ? item.label : val;
+    
+    Array.from(optionsDiv.children).forEach(opt => {
+      opt.classList.toggle('active', opt.dataset.value === val);
+    });
+  };
+
+  options.forEach(p => {
+    const opt = document.createElement('div');
+    opt.className = 'dropdown-option';
+    opt.dataset.value = p.value;
+    opt.textContent = p.label;
+    opt.style.cssText = 'padding: 6px 8px; font-size: 11px;';
+    opt.onclick = (e) => {
+      e.stopPropagation();
+      selectedValue = p.value;
+      updateSelectedDisplay(p.value);
+      container.classList.remove('open');
+      if (onChange) onChange(p.value);
+    };
+    optionsDiv.appendChild(opt);
+  });
+
+  updateSelectedDisplay(selectedValue);
+
+  selectedDiv.onclick = (e) => {
+    e.stopPropagation();
+    
+    document.querySelectorAll('.custom-dropdown.open').forEach(d => {
+      if (d !== container) {
+        d.classList.remove('open');
+      }
+    });
+
+    container.classList.toggle('open');
+  };
+
+  const clickOutsideHandler = (e) => {
+    if (!document.body.contains(container)) {
+      document.removeEventListener('click', clickOutsideHandler);
+      return;
+    }
+    if (!container.contains(e.target)) {
+      container.classList.remove('open');
+    }
+  };
+  document.addEventListener('click', clickOutsideHandler);
+
+  container.appendChild(selectedDiv);
+  container.appendChild(optionsDiv);
+
+  Object.defineProperty(container, 'value', {
+    get: () => selectedValue,
+    set: (val) => {
+      selectedValue = val;
+      updateSelectedDisplay(val);
+    },
+    configurable: true
+  });
+
+  return container;
+}
+
+function renderSearchFilters() {
+  const container = document.getElementById('board-search-container');
+  if (!container) return;
+
+  container.querySelectorAll('.search-filter-select').forEach(el => el.remove());
+
+  const priorities = [
+    { value: 'all', label: window.i18n ? window.i18n.t('filter.allPriorities') : 'All Priorities' },
+    { value: 'none', label: window.i18n ? window.i18n.t('priority.none') : 'None' },
+    { value: 'low', label: window.i18n ? window.i18n.t('priority.low') : 'Low' },
+    { value: 'medium', label: window.i18n ? window.i18n.t('priority.medium') : 'Medium' },
+    { value: 'urgent', label: window.i18n ? window.i18n.t('priority.urgent') : 'Urgent' }
+  ];
+
+  const priorityDropdown = createSearchFilterDropdown(priorities, currentPriorityFilter, (val) => {
+    currentPriorityFilter = val;
+    applyBoardSearchAndFilter();
+  });
+  priorityDropdown.classList.add('search-filter-select');
+  priorityDropdown.title = 'Filter by Priority';
+  container.appendChild(priorityDropdown);
+
+  const board = store.getActiveBoard();
+  if (board && (board.hasCollaborators || board.isShared)) {
+    const assignees = [
+      { value: 'all', label: window.i18n ? window.i18n.t('filter.allAssignees') : 'All Assignees' },
+      { value: 'none', label: window.i18n ? window.i18n.t('priority.none') : 'None' }
+    ];
+
+    activeBoardCollaborators.forEach(c => {
+      if (c.username && !assignees.some(o => o.value === c.username)) {
+        assignees.push({ value: c.username, label: c.username });
+      }
+    });
+
+    if (currentAssigneeFilter && currentAssigneeFilter !== 'all' && currentAssigneeFilter !== 'none' && !assignees.some(o => o.value === currentAssigneeFilter)) {
+      assignees.push({ value: currentAssigneeFilter, label: currentAssigneeFilter });
+    }
+
+    const assigneeDropdown = createSearchFilterDropdown(assignees, currentAssigneeFilter, (val) => {
+      currentAssigneeFilter = val;
+      applyBoardSearchAndFilter();
+    });
+    assigneeDropdown.classList.add('search-filter-select');
+    assigneeDropdown.title = 'Filter by Assignee';
+    container.appendChild(assigneeDropdown);
+  }
+}
+
+function applyBoardSearchAndFilter() {
+  const query = boardSearchInput ? boardSearchInput.value.toLowerCase().trim() : '';
+  const tasks = document.querySelectorAll('.task-card:not(.inline-new-task)');
+  
+  tasks.forEach(taskEl => {
+    const taskId = taskEl.dataset.id;
+    const columnId = taskEl.dataset.columnId;
+    
+    const board = store.getActiveBoard();
+    let task = null;
+    if (board) {
+      const col = board.columns.find(c => c.id === columnId);
+      if (col) {
+        task = col.tasks.find(t => t.id === taskId);
+      }
+    }
+    
+    if (!task) return;
+
+    const textMatches = task.text.toLowerCase().includes(query);
+    const taskPriority = task.priority || 'none';
+    const priorityMatches = (currentPriorityFilter === 'all') || (taskPriority === currentPriorityFilter);
+    const taskAssignee = task.assignedTo || 'none';
+    const assigneeMatches = (currentAssigneeFilter === 'all') || (taskAssignee === currentAssigneeFilter);
+
+    if (textMatches && priorityMatches && assigneeMatches) {
+      taskEl.style.display = '';
+    } else {
+      taskEl.style.display = 'none';
+    }
+  });
 }
 
 function updateHomeGreeting(forceWelcomeBack = false) {
@@ -792,10 +969,12 @@ function renderActiveBoard(animate = false, oldPositions = null) {
   editBoardTitleBtn.classList.remove('hidden');
   if (addColumnBtn) addColumnBtn.classList.remove('hidden');
   if (boardSearchContainer) boardSearchContainer.classList.remove('hidden');
+  currentPriorityFilter = 'all';
+  currentAssigneeFilter = 'all';
   if (boardSearchInput) {
     boardSearchInput.value = '';
-    document.querySelectorAll('.task-card').forEach(t => t.style.display = '');
   }
+  renderSearchFilters();
   if (statsBtn) statsBtn.classList.remove('hidden');
   const extrasBtn = document.getElementById('extras-btn');
   if (extrasBtn) extrasBtn.classList.remove('hidden');
@@ -4367,18 +4546,7 @@ if (updateBtn) {
 
 // Board Search Logic
 if (boardSearchInput) {
-  boardSearchInput.addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase().trim();
-    const tasks = document.querySelectorAll('.task-card');
-    tasks.forEach(taskEl => {
-      // The task text is stored in the first text node
-      const textNode = taskEl.childNodes[0];
-      const text = textNode ? (textNode.nodeValue || '').toLowerCase() : '';
-      if (text.includes(query)) {
-        taskEl.style.display = '';
-      } else {
-        taskEl.style.display = 'none';
-      }
-    });
+  boardSearchInput.addEventListener('input', () => {
+    applyBoardSearchAndFilter();
   });
 }

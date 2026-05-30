@@ -152,5 +152,7 @@ window.locales.tr = {
   "priority.low": "Düşük",
   "priority.medium": "Orta",
   "priority.urgent": "Acil",
-  "assignee.label": "Kişi:"
+  "assignee.label": "Kişi:",
+  "filter.allPriorities": "Tüm Öncelikler",
+  "filter.allAssignees": "Tüm Kişiler"
 };
