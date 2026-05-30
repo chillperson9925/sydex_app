@@ -1882,6 +1882,11 @@ if (langDropdown && langSelected && langOptions) {
       // Apply language change
       if (window.i18n) {
         window.i18n.setLanguage(option.dataset.value);
+        if (window.electronAPI && window.electronAPI.saveSettings) {
+          window.electronAPI.getSettings().then(settings => {
+            window.electronAPI.saveSettings({ ...settings, language: option.dataset.value });
+          }).catch(err => console.error('Failed to save language setting:', err));
+        }
       }
     };
   });
@@ -1929,6 +1934,63 @@ if (startupDropdown && startupSelected && startupOptionsEl) {
   document.addEventListener('click', (e) => {
     if (!startupDropdown.contains(e.target)) {
       startupDropdown.classList.remove('open');
+    }
+  });
+}
+
+// Custom Close Behavior Dropdown Logic
+const closeDropdown = document.getElementById('close-dropdown');
+const closeSelected = document.getElementById('close-selected');
+const closeOptionsEl = document.getElementById('close-options');
+
+if (closeDropdown && closeSelected && closeOptionsEl) {
+  if (window.electronAPI && window.electronAPI.getSettings) {
+    window.electronAPI.getSettings()
+      .then(settings => {
+        const savedClose = settings.closeBehavior || 'tray'; // Default is tray
+        const closeOpts = closeOptionsEl.querySelectorAll('.dropdown-option');
+        closeOpts.forEach(o => {
+          o.classList.toggle('active', o.dataset.value === savedClose);
+          if (o.dataset.value === savedClose) {
+            closeSelected.querySelector('span').textContent = o.textContent;
+            closeSelected.querySelector('span').setAttribute('data-i18n', o.getAttribute('data-i18n'));
+          }
+        });
+      })
+      .catch(err => console.warn('Failed to load close behavior settings:', err));
+  }
+
+  closeSelected.onclick = (e) => {
+    e.stopPropagation();
+    closeDropdown.classList.toggle('open');
+  };
+
+  const closeOpts = closeOptionsEl.querySelectorAll('.dropdown-option');
+  closeOpts.forEach(option => {
+    option.onclick = async () => {
+      closeOpts.forEach(o => o.classList.remove('active'));
+      option.classList.add('active');
+      closeSelected.querySelector('span').textContent = option.textContent;
+      closeSelected.querySelector('span').setAttribute('data-i18n', option.getAttribute('data-i18n'));
+      closeDropdown.classList.remove('open');
+      
+      const behavior = option.dataset.value;
+      try {
+        if (window.electronAPI && window.electronAPI.saveSettings) {
+          const currentSettings = await window.electronAPI.getSettings().catch(() => ({}));
+          await window.electronAPI.saveSettings({ ...currentSettings, closeBehavior: behavior });
+          notify('Close behavior updated', 'success', 2000);
+        }
+      } catch (err) {
+        console.error('Failed to save close behavior settings:', err);
+        notify('Failed to update close behavior.', 'error');
+      }
+    };
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!closeDropdown.contains(e.target)) {
+      closeDropdown.classList.remove('open');
     }
   });
 }
@@ -3160,6 +3222,13 @@ function showSetupScreen(pendingCredentials) {
       localStorage.setItem('sydex-perm-emails', permEmailsVal);
       localStorage.setItem('sydex-perm-telemetry', permTelemetryVal);
       localStorage.setItem('sydex-perm-tos', true);
+
+      // Now save to Electron settings as well
+      if (window.electronAPI && window.electronAPI.saveSettings) {
+        window.electronAPI.getSettings().then(settings => {
+          window.electronAPI.saveSettings({ ...settings, language: selectedLang });
+        }).catch(err => console.error('Failed to save setup settings:', err));
+      }
 
       // Now create the account with preferences
       continueBtn.disabled = true;
