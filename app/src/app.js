@@ -190,9 +190,19 @@ function createSearchFilterDropdown(options, defaultValue, onChange) {
 
 function renderSearchFilters() {
   const container = document.getElementById('board-search-container');
-  if (!container) return;
+  const popup = document.getElementById('board-filter-popup');
+  if (!container || !popup) return;
 
-  container.querySelectorAll('.search-filter-select').forEach(el => el.remove());
+  popup.innerHTML = '';
+
+  const priorityItem = document.createElement('div');
+  priorityItem.className = 'filter-popup-item';
+  priorityItem.style.cssText = 'display: flex; flex-direction: column; gap: 4px;';
+
+  const priorityLabel = document.createElement('span');
+  priorityLabel.textContent = window.i18n ? window.i18n.t('priority.label') : 'Priority:';
+  priorityLabel.style.cssText = 'font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;';
+  priorityItem.appendChild(priorityLabel);
 
   const priorities = [
     { value: 'all', label: window.i18n ? window.i18n.t('filter.allPriorities') : 'All Priorities' },
@@ -206,12 +216,22 @@ function renderSearchFilters() {
     currentPriorityFilter = val;
     applyBoardSearchAndFilter();
   });
-  priorityDropdown.classList.add('search-filter-select');
-  priorityDropdown.title = 'Filter by Priority';
-  container.appendChild(priorityDropdown);
+  priorityDropdown.style.width = '100%';
+  priorityDropdown.style.marginLeft = '0';
+  priorityItem.appendChild(priorityDropdown);
+  popup.appendChild(priorityItem);
 
   const board = store.getActiveBoard();
   if (board && (board.hasCollaborators || board.isShared)) {
+    const assigneeItem = document.createElement('div');
+    assigneeItem.className = 'filter-popup-item';
+    assigneeItem.style.cssText = 'display: flex; flex-direction: column; gap: 4px;';
+
+    const assigneeLabel = document.createElement('span');
+    assigneeLabel.textContent = window.i18n ? window.i18n.t('assignee.label') : 'Assignee:';
+    assigneeLabel.style.cssText = 'font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;';
+    assigneeItem.appendChild(assigneeLabel);
+
     const assignees = [
       { value: 'all', label: window.i18n ? window.i18n.t('filter.allAssignees') : 'All Assignees' },
       { value: 'none', label: window.i18n ? window.i18n.t('priority.none') : 'None' }
@@ -231,9 +251,18 @@ function renderSearchFilters() {
       currentAssigneeFilter = val;
       applyBoardSearchAndFilter();
     });
-    assigneeDropdown.classList.add('search-filter-select');
-    assigneeDropdown.title = 'Filter by Assignee';
-    container.appendChild(assigneeDropdown);
+    assigneeDropdown.style.width = '100%';
+    assigneeDropdown.style.marginLeft = '0';
+    assigneeItem.appendChild(assigneeDropdown);
+    popup.appendChild(assigneeItem);
+  }
+
+  const filterBtn = document.getElementById('board-filter-btn');
+  if (filterBtn) {
+    const isActive = (currentPriorityFilter !== 'all') || (currentAssigneeFilter !== 'all');
+    filterBtn.style.color = isActive ? 'var(--primary-color)' : 'var(--text-muted)';
+    filterBtn.style.background = isActive ? 'rgba(255, 255, 255, 0.1)' : '';
+    filterBtn.style.borderColor = isActive ? 'rgba(255, 255, 255, 0.2)' : 'transparent';
   }
 }
 
@@ -974,6 +1003,8 @@ function renderActiveBoard(animate = false, oldPositions = null) {
   if (boardSearchInput) {
     boardSearchInput.value = '';
   }
+  const filterPopup = document.getElementById('board-filter-popup');
+  if (filterPopup) filterPopup.classList.add('hidden');
   renderSearchFilters();
   if (statsBtn) statsBtn.classList.remove('hidden');
   const extrasBtn = document.getElementById('extras-btn');
@@ -4548,5 +4579,28 @@ if (updateBtn) {
 if (boardSearchInput) {
   boardSearchInput.addEventListener('input', () => {
     applyBoardSearchAndFilter();
+  });
+}
+
+// Board Filter Popover Toggle
+const boardFilterBtn = document.getElementById('board-filter-btn');
+const boardFilterPopup = document.getElementById('board-filter-popup');
+
+if (boardFilterBtn && boardFilterPopup) {
+  boardFilterBtn.onclick = (e) => {
+    e.stopPropagation();
+    
+    // Close other popups (like profile)
+    document.querySelectorAll('.profile-popup').forEach(p => {
+      if (p !== boardFilterPopup) p.classList.add('hidden');
+    });
+
+    boardFilterPopup.classList.toggle('hidden');
+  };
+
+  document.addEventListener('click', (e) => {
+    if (!boardFilterPopup.contains(e.target) && e.target !== boardFilterBtn && !boardFilterBtn.contains(e.target)) {
+      boardFilterPopup.classList.add('hidden');
+    }
   });
 }

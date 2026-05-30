@@ -179,16 +179,26 @@
         <div style="display: flex; gap: 4px; align-items: center;">
           <div id="board-search-container" class="hidden"
             style="position: relative; display: flex; align-items: center; margin-right: 8px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round"
-              style="position: absolute; left: 8px; color: var(--text-muted); pointer-events: none;">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="text" id="board-search-input" data-i18n-placeholder="search.placeholder" placeholder="Search tasks..."
-              style="background: rgba(255,255,255,0.05); border: 1px solid transparent; color: var(--text-main); padding: 6px 8px 6px 30px; border-radius: 6px; font-size: 13px; width: 140px; outline: none; transition: all 0.2s; font-family: inherit;"
-              onfocus="this.style.borderColor='var(--primary-color)'; this.style.background='rgba(255,255,255,0.1)'; this.style.width='200px';"
-              onblur="this.style.borderColor='transparent'; this.style.background='rgba(255,255,255,0.05)'; this.style.width='140px';">
+            <div style="position: relative; display: flex; align-items: center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"
+                style="position: absolute; left: 8px; color: var(--text-muted); pointer-events: none;">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="board-search-input" data-i18n-placeholder="search.placeholder" placeholder="Search tasks..."
+                style="background: rgba(255,255,255,0.05); border: 1px solid transparent; color: var(--text-main); padding: 6px 8px 6px 30px; border-radius: 6px; font-size: 13px; width: 140px; outline: none; transition: all 0.2s; font-family: inherit;"
+                onfocus="this.style.borderColor='var(--primary-color)'; this.style.background='rgba(255,255,255,0.1)'; this.style.width='200px';"
+                onblur="this.style.borderColor='transparent'; this.style.background='rgba(255,255,255,0.05)'; this.style.width='140px';">
+            </div>
+            <button id="board-filter-btn" class="icon-btn tooltip-btn" data-tooltip="Filter Tasks" style="margin-left: 6px; color: var(--text-muted); width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+              </svg>
+            </button>
+            <div id="board-filter-popup" class="profile-popup hidden" style="top: calc(100% + 6px); right: 0; bottom: auto; padding: 12px; min-width: 170px; display: flex; flex-direction: column; gap: 10px; z-index: 1002;">
+              <!-- dynamically injected filters -->
+            </div>
           </div>
           <button id="add-column-btn" class="icon-btn tooltip-btn hidden" data-i18n-tooltip="tooltip.addCategory" data-tooltip="Add Category"
             style="color: var(--text-main);">
