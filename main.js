@@ -10,6 +10,20 @@ autoUpdater.autoInstallOnAppQuit = true;
 const dataFilePath = path.join(app.getPath('userData'), 'kanban_data.json');
 const settingsFilePath = path.join(app.getPath('userData'), 'settings.json');
 
+// Single Instance Lock
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      if (!mainWindow.isVisible()) mainWindow.show();
+      mainWindow.focus();
+    }
+  });
+}
+
 // Module-level variables
 let mainWindow = null;
 let tray = null;
