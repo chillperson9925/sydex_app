@@ -1,6 +1,7 @@
 class Store {
   constructor() {
     this.data = { boards: [], folders: [], activeBoardId: null };
+    this._deletedBoardIds = [];
   }
 
   async load() {
@@ -34,7 +35,13 @@ class Store {
   async save() {
     if (window.api && window.api.token) {
       try {
-        await window.api.saveBoardData(this.data);
+        const payload = { ...this.data };
+        if (this._deletedBoardIds.length > 0) {
+          payload._deletedBoardIds = [...this._deletedBoardIds];
+        }
+        await window.api.saveBoardData(payload);
+        // Clear deleted IDs after successful save
+        this._deletedBoardIds = [];
       } catch (err) {
         console.error("Failed to save cloud data", err);
         if (typeof notify === 'function') {
@@ -59,6 +66,7 @@ class Store {
   }
 
   deleteBoard(id) {
+    this._deletedBoardIds.push(id);
     this.data.boards = this.data.boards.filter(b => b.id !== id);
     if (this.data.activeBoardId === id) {
       this.data.activeBoardId = this.data.boards.length > 0 ? this.data.boards[0].id : null;
@@ -76,6 +84,10 @@ class Store {
   deleteFolder(id, deleteBoards = false) {
     this.data.folders = this.data.folders.filter(f => f.id !== id);
     if (deleteBoards) {
+      // Track all boards being deleted with the folder
+      this.data.boards.filter(b => b.folderId === id).forEach(b => {
+        this._deletedBoardIds.push(b.id);
+      });
       this.data.boards = this.data.boards.filter(b => b.folderId !== id);
       if (this.data.activeBoardId && !this.data.boards.find(b => b.id === this.data.activeBoardId)) {
         this.data.activeBoardId = this.data.boards.length > 0 ? this.data.boards[0].id : null;
