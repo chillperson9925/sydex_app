@@ -24,8 +24,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Auto-increment Version
-        run: npm version 1.0.${{ github.run_number }} --no-git-tag-version
+      - name: Auto-increment Version and Tag
+        run: |
+          npm version 1.0.${{ github.run_number }} --no-git-tag-version
+          git tag v1.0.${{ github.run_number }}
 
       - name: Build and Publish
         env:
