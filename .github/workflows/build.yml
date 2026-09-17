@@ -26,8 +26,11 @@ jobs:
 
       - name: Auto-increment Version and Tag
         run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
           npm version 1.0.${{ github.run_number }} --no-git-tag-version
           git tag v1.0.${{ github.run_number }}
+          git push origin v1.0.${{ github.run_number }}
 
       - name: Build and Publish
         env:
