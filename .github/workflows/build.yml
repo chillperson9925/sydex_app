@@ -14,17 +14,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Install dependencies
         run: npm install
 
-      - name: Auto-increment Version and Tag
+      - name: Set version and create tag
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
@@ -32,7 +32,15 @@ jobs:
           git tag v1.0.${{ github.run_number }}
           git push origin v1.0.${{ github.run_number }}
 
-      - name: Build and Publish
+      - name: Build (no publish)
+        run: npx electron-builder --win --publish never
+
+      - name: Create GitHub Release and Upload Assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx electron-builder --win --publish always
+        run: |
+          gh release create v1.0.${{ github.run_number }} `
+            "dist/Sydex Setup 1.0.${{ github.run_number }}.exe" `
+            "dist/Sydex Setup 1.0.${{ github.run_number }}.exe.blockmap" `
+            --title "v1.0.${{ github.run_number }}" `
+            --notes "Automated release v1.0.${{ github.run_number }}"
