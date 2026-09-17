@@ -42,5 +42,6 @@ jobs:
           gh release create v1.0.${{ github.run_number }} `
             "dist/Sydex Setup 1.0.${{ github.run_number }}.exe" `
             "dist/Sydex Setup 1.0.${{ github.run_number }}.exe.blockmap" `
+            "dist/latest.yml" `
             --title "v1.0.${{ github.run_number }}" `
             --notes "Automated release v1.0.${{ github.run_number }}"
