@@ -11,7 +11,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Updater APIs
   checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
   downloadUpdate: () => ipcRenderer.send('download-update'),
+  on_update_progress: (callback) => ipcRenderer.on('update-progress', (_event, value) => callback(value)),
   onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (_event, value) => callback(value)),
+  on_update_downloaded: (callback) => ipcRenderer.on('update-downloaded', () => callback()),
   onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', () => callback()),
   on_update_error: (callback) => ipcRenderer.on('update-error', (_event, value) => callback(value)),
   onUpdateError: (callback) => ipcRenderer.on('update-error', (_event, value) => callback(value)),

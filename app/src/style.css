@@ -1745,6 +1745,69 @@ textarea,
   transform: scale(1.05);
 }
 
+.notify-toast.notify-progress-toast {
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 280px;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.notify-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.notify-progress-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.notify-progress-percent {
+  font-size: 12px;
+  font-weight: 600;
+  color: #60a5fa;
+  font-variant-numeric: tabular-nums;
+}
+
+.notify-progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.notify-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.notify-progress-toast.notify-success .notify-progress-bar {
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+}
+
+.notify-progress-toast.notify-success .notify-progress-percent {
+  color: #4ade80;
+}
+
+.notify-progress-toast.notify-error .notify-progress-bar {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.notify-progress-toast.notify-error .notify-progress-percent {
+  color: #f87171;
+}
+
 @keyframes notifyIn {
   from {
     opacity: 0;

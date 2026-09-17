@@ -4558,26 +4558,143 @@ if (aboutBtn && aboutOverlay && aboutCloseBtn) {
 // --- CHECK FOR UPDATES BUTTON ---
 const updateBtn = document.getElementById('update-btn');
 
-// Global listener for update downloaded
-if (window.electronAPI && window.electronAPI.onUpdateDownloaded) {
-  window.electronAPI.onUpdateDownloaded(() => {
-    openConfirmModal(
-      'Update Ready',
-      'A new version of Sydex has been downloaded. Relaunch the app to apply the update?',
-      () => { window.electronAPI.installUpdate(); },
-      null, null,
-      'Relaunch Now',
-      'Later'
-    );
+let active_update_toast = null;
+
+function show_update_progress_toast() {
+  if (active_update_toast && document.body.contains(active_update_toast)) {
+    return active_update_toast;
+  }
+
+  const toast = document.createElement('div');
+  toast.className = 'notify-toast notify-info notify-progress-toast';
+
+  const toast_header = document.createElement('div');
+  toast_header.className = 'notify-progress-header';
+
+  const title_wrapper = document.createElement('div');
+  title_wrapper.className = 'notify-progress-title';
+  title_wrapper.innerHTML = `${NOTIFY_ICONS.info || ''}<span class="notify-progress-label">Downloading update...</span>`;
+
+  const percent_badge = document.createElement('span');
+  percent_badge.className = 'notify-progress-percent';
+  percent_badge.textContent = '0%';
+
+  toast_header.appendChild(title_wrapper);
+  toast_header.appendChild(percent_badge);
+
+  const progress_track = document.createElement('div');
+  progress_track.className = 'notify-progress-track';
+
+  const progress_fill = document.createElement('div');
+  progress_fill.className = 'notify-progress-bar';
+  progress_track.appendChild(progress_fill);
+
+  toast.appendChild(toast_header);
+  toast.appendChild(progress_track);
+
+  toast.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    toast.classList.add('notify-out');
+    toast.addEventListener('animationend', () => toast.remove());
+    if (active_update_toast === toast) {
+      active_update_toast = null;
+    }
   });
+
+  notifyContainer.appendChild(toast);
+  active_update_toast = toast;
+
+  return toast;
 }
 
-// Global listener for update errors
+function update_download_progress(percent) {
+  if (!active_update_toast || !document.body.contains(active_update_toast)) {
+    return;
+  }
+  const rounded_percent = Math.min(100, Math.max(0, Math.round(percent)));
+  const bar = active_update_toast.querySelector('.notify-progress-bar');
+  const label = active_update_toast.querySelector('.notify-progress-percent');
+  const text_el = active_update_toast.querySelector('.notify-progress-label');
+  if (bar) bar.style.width = `${rounded_percent}%`;
+  if (label) label.textContent = `${rounded_percent}%`;
+  if (text_el) text_el.textContent = `Downloading update... ${rounded_percent}%`;
+}
+
+function finish_download_toast() {
+  if (!active_update_toast || !document.body.contains(active_update_toast)) {
+    return;
+  }
+  active_update_toast.classList.remove('notify-info');
+  active_update_toast.classList.add('notify-success');
+  const bar = active_update_toast.querySelector('.notify-progress-bar');
+  const label = active_update_toast.querySelector('.notify-progress-percent');
+  const text_el = active_update_toast.querySelector('.notify-progress-label');
+  if (bar) bar.style.width = '100%';
+  if (label) label.textContent = '100%';
+  if (text_el) text_el.textContent = 'Update downloaded!';
+
+  const toast_to_remove = active_update_toast;
+  active_update_toast = null;
+  setTimeout(() => {
+    if (toast_to_remove && document.body.contains(toast_to_remove)) {
+      toast_to_remove.classList.add('notify-out');
+      toast_to_remove.addEventListener('animationend', () => toast_to_remove.remove());
+    }
+  }, 4000);
+}
+
+function fail_download_toast(err_msg) {
+  if (!active_update_toast || !document.body.contains(active_update_toast)) {
+    return;
+  }
+  active_update_toast.classList.remove('notify-info');
+  active_update_toast.classList.add('notify-error');
+  const label = active_update_toast.querySelector('.notify-progress-percent');
+  const text_el = active_update_toast.querySelector('.notify-progress-label');
+  if (label) label.textContent = 'Failed';
+  if (text_el) text_el.textContent = `Download failed: ${err_msg || 'Error'}`;
+
+  const toast_to_remove = active_update_toast;
+  active_update_toast = null;
+  setTimeout(() => {
+    if (toast_to_remove && document.body.contains(toast_to_remove)) {
+      toast_to_remove.classList.add('notify-out');
+      toast_to_remove.addEventListener('animationend', () => toast_to_remove.remove());
+    }
+  }, 5000);
+}
+
+// Global updater listeners
 if (window.electronAPI) {
+  const progress_listener = window.electronAPI.on_update_progress || window.electronAPI.onUpdateProgress;
+  if (progress_listener) {
+    progress_listener((percent) => {
+      update_download_progress(percent);
+    });
+  }
+
+  const downloaded_listener = window.electronAPI.on_update_downloaded || window.electronAPI.onUpdateDownloaded;
+  if (downloaded_listener) {
+    downloaded_listener(() => {
+      finish_download_toast();
+      openConfirmModal(
+        'Update Ready',
+        'A new version of Sydex has been downloaded. Relaunch the app to apply the update?',
+        () => { window.electronAPI.installUpdate(); },
+        null, null,
+        'Relaunch Now',
+        'Later'
+      );
+    });
+  }
+
   const error_listener = window.electronAPI.on_update_error || window.electronAPI.onUpdateError;
   if (error_listener) {
     error_listener((err_msg) => {
-      notify(`Update error: ${err_msg}`, 'error');
+      fail_download_toast(err_msg);
+      if (!active_update_toast) {
+        notify(`Update error: ${err_msg}`, 'error');
+      }
     });
   }
 }
@@ -4594,12 +4711,12 @@ if (updateBtn) {
       try {
         const result = await window.electronAPI.checkForUpdates();
         if (result.available) {
-          notify('Update Found: Downloading...', 'success');
+          show_update_progress_toast();
           window.electronAPI.downloadUpdate();
         } else if (result.error && result.error !== 'App is not packaged') {
           notify(`Update Check Failed: ${result.error}`, 'error');
         } else if (result.error === 'App is not packaged') {
-           notify('Auto-update is disabled in development.', 'info');
+          notify('Auto-update is disabled in development.', 'info');
         } else {
           notify('You are running the latest version.', 'info');
         }
