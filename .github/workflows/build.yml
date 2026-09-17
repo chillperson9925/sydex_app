@@ -39,9 +39,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.0.${{ github.run_number }} `
-            "dist/Sydex Setup 1.0.${{ github.run_number }}.exe" `
-            "dist/Sydex Setup 1.0.${{ github.run_number }}.exe.blockmap" `
-            "dist/latest.yml" `
-            --title "v1.0.${{ github.run_number }}" `
-            --notes "Automated release v1.0.${{ github.run_number }}"
+          Write-Host "=== Output directory files ==="
+          Get-ChildItem dist
+          Write-Host "=== latest.yml content ==="
+          Get-Content dist/latest.yml
+
+          $tag = "v1.0.${{ github.run_number }}"
+          $exe = "dist/Sydex-Setup-1.0.${{ github.run_number }}.exe"
+          $blockmap = "dist/Sydex-Setup-1.0.${{ github.run_number }}.exe.blockmap"
+          $yml = "dist/latest.yml"
+
+          gh release create $tag $exe $blockmap $yml --title "$tag" --notes "Automated release $tag"
+

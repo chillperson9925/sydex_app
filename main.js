@@ -225,10 +225,13 @@ ipcMain.handle('get-version', () => {
 // Auto Updater IPC Handlers
 autoUpdater.autoDownload = false;
 
-function cleanUpdaterError(err) {
+function clean_updater_error(err) {
   let msg = err ? (err.message || String(err)) : 'Unknown error';
   if (msg.includes('latest.yml') && (msg.includes('404') || msg.includes('not found'))) {
     return 'Update metadata (latest.yml) is missing from the GitHub release.';
+  }
+  if (msg.includes('.exe') && (msg.includes('404') || msg.includes('not found'))) {
+    return 'Update installer (.exe) is missing from the GitHub release.';
   }
   if (msg.includes('HttpError')) {
     return msg.split('\n')[0];
@@ -236,21 +239,23 @@ function cleanUpdaterError(err) {
   return msg;
 }
 
+const cleanUpdaterError = clean_updater_error;
+
 ipcMain.handle('check-for-updates', () => {
   return new Promise((resolve) => {
-    const onAvailable = (info) => { cleanup(); resolve({ available: true, info }); };
-    const onNotAvailable = () => { cleanup(); resolve({ available: false }); };
-    const onError = (err) => { cleanup(); resolve({ available: false, error: cleanUpdaterError(err) }); };
+    const on_available = (info) => { cleanup(); resolve({ available: true, info }); };
+    const on_not_available = () => { cleanup(); resolve({ available: false }); };
+    const on_error = (err) => { cleanup(); resolve({ available: false, error: clean_updater_error(err) }); };
     
     const cleanup = () => {
-      autoUpdater.removeListener('update-available', onAvailable);
-      autoUpdater.removeListener('update-not-available', onNotAvailable);
-      autoUpdater.removeListener('error', onError);
+      autoUpdater.removeListener('update-available', on_available);
+      autoUpdater.removeListener('update-not-available', on_not_available);
+      autoUpdater.removeListener('error', on_error);
     };
 
-    autoUpdater.once('update-available', onAvailable);
-    autoUpdater.once('update-not-available', onNotAvailable);
-    autoUpdater.once('error', onError);
+    autoUpdater.once('update-available', on_available);
+    autoUpdater.once('update-not-available', on_not_available);
+    autoUpdater.once('error', on_error);
 
     try {
       if (!app.isPackaged) {
@@ -260,7 +265,7 @@ ipcMain.handle('check-for-updates', () => {
       }
       autoUpdater.checkForUpdates().catch(err => {
         cleanup();
-        resolve({ available: false, error: cleanUpdaterError(err) });
+        resolve({ available: false, error: clean_updater_error(err) });
       });
     } catch (e) {
       cleanup();
@@ -270,7 +275,35 @@ ipcMain.handle('check-for-updates', () => {
 });
 
 ipcMain.on('download-update', () => {
-  autoUpdater.downloadUpdate();
+  try {
+    const download_promise = autoUpdater.downloadUpdate();
+    if (download_promise && typeof download_promise.catch === 'function') {
+      download_promise.catch((err) => {
+        const error_msg = clean_updater_error(err);
+        console.error('Failed to download update:', error_msg);
+        const windows = BrowserWindow.getAllWindows();
+        if (windows.length > 0) {
+          windows[0].webContents.send('update-error', error_msg);
+        }
+      });
+    }
+  } catch (err) {
+    const error_msg = clean_updater_error(err);
+    console.error('Download update threw error:', error_msg);
+    const windows = BrowserWindow.getAllWindows();
+    if (windows.length > 0) {
+      windows[0].webContents.send('update-error', error_msg);
+    }
+  }
+});
+
+autoUpdater.on('error', (err) => {
+  const error_msg = clean_updater_error(err);
+  console.error('autoUpdater error event:', error_msg);
+  const windows = BrowserWindow.getAllWindows();
+  if (windows.length > 0) {
+    windows[0].webContents.send('update-error', error_msg);
+  }
 });
 
 autoUpdater.on('download-progress', (progressObj) => {

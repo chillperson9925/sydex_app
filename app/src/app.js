@@ -643,12 +643,40 @@ async function init() {
           progressBar.style.transition = 'width 0.2s';
           progressBar.style.width = '0%';
           
+          let update_timed_out = false;
+          const download_timeout = setTimeout(() => {
+            update_timed_out = true;
+            console.warn('Update download timed out');
+            statusText.textContent = 'Update download timed out, loading app...';
+            setTimeout(() => {
+              startNormalLoading();
+            }, 1200);
+          }, 45000);
+
+          const handle_update_error = (err_msg) => {
+            if (update_timed_out) return;
+            clearTimeout(download_timeout);
+            console.error('Update download error:', err_msg);
+            statusText.textContent = 'Update download failed, loading app...';
+            setTimeout(() => {
+              startNormalLoading();
+            }, 1200);
+          };
+
+          const error_listener = window.electronAPI.on_update_error || window.electronAPI.onUpdateError;
+          if (error_listener) {
+            error_listener(handle_update_error);
+          }
+
           window.electronAPI.onUpdateProgress((percent) => {
+            if (update_timed_out) return;
             progressBar.style.width = `${percent}%`;
             statusText.textContent = `Downloading update... ${Math.round(percent)}%`;
           });
 
           window.electronAPI.onUpdateDownloaded(() => {
+            if (update_timed_out) return;
+            clearTimeout(download_timeout);
             statusText.textContent = 'Update downloaded! Restarting...';
             progressBar.style.width = '100%';
             setTimeout(() => {
@@ -4542,6 +4570,16 @@ if (window.electronAPI && window.electronAPI.onUpdateDownloaded) {
       'Later'
     );
   });
+}
+
+// Global listener for update errors
+if (window.electronAPI) {
+  const error_listener = window.electronAPI.on_update_error || window.electronAPI.onUpdateError;
+  if (error_listener) {
+    error_listener((err_msg) => {
+      notify(`Update error: ${err_msg}`, 'error');
+    });
+  }
 }
 
 if (updateBtn) {

@@ -25,7 +25,11 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "app/src/assets/icon.png"
+      "icon": "app/src/assets/icon.png",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "linux": {
       "target": [
